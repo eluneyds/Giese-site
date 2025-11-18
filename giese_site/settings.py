@@ -113,7 +113,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else []
 
 # Compatibilidad con django-cloudinary-storage para Django 5.2+
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
+WHITENOISE_KEEP_ONLY_HASHED_FILES = False
+
 
 # Django 4.2+: si definís STORAGES, debe existir 'default' y 'staticfiles'
 STORAGES = {
