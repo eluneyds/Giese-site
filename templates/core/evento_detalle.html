@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .evt-hero { background: linear-gradient(135deg, {{ evento.color|default:'#2c5530' }}, #4a7c59); color:#fff; padding: 1.75rem 0; border-radius: 0 0 18px 18px; }
+  .evt-chip { display:inline-flex; align-items:center; gap:.5rem; background: rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25); padding:.35rem .7rem; border-radius:999px; font-weight:600; }
+  .evt-cover { max-height:140px; width:auto; object-fit:contain; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,.12); background:#fff; padding:.5rem; }
+  .evt-card { border-left: 4px solid {{ evento.color|default:'#2c5530' }}; }
+  .evt-btn { border-radius:999px; }
+</style>
+
+<div class="evt-hero mb-3">
+  <div class="container">
+    <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
+      {% if evento.imagen_portada %}
+        <img src="{{ evento.imagen_portada.url }}" alt="{{ evento.nombre }}" class="evt-cover">
+      {% elif evento.cover_url %}
+        <img src="{{ evento.cover_url }}" alt="{{ evento.nombre }}" class="evt-cover">
+      {% endif %}
+      <div>
+        <h2 class="mb-2">{{ evento.nombre }}</h2>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="evt-chip"><i class="bi bi-calendar3"></i> {{ evento.fecha|date:'d M Y'|default:'Sin fecha' }}</span>
+          {% if evento.fecha_cierre %}<span class="evt-chip"><i class="bi bi-flag"></i> Cierre: {{ evento.fecha_cierre|date:'d M Y' }}</span>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="card evt-card shadow-sm">
+        <div class="card-body">
+          <p class="mb-4">{{ evento.descripcion|linebreaks }}</p>
+
+          {% if evento.archivos.all %}
+          <h5 class="mb-2">Descargas</h5>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            {% for a in evento.archivos.all %}
+              <a href="{{ a.archivo.url }}" class="btn btn-sm btn-outline-primary evt-btn" download>
+                <i class="bi bi-download me-1"></i>{{ a.nombre|default:a.archivo.name }}
+              </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          {% if evento.pdf or evento.archivo %}
+          <div class="mt-2">
+            {% if evento.pdf %}
+              <a href="{{ evento.pdf }}" class="btn btn-sm btn-primary evt-btn me-1" download><i class="bi bi-filetype-pdf me-1"></i>PDF</a>
+            {% endif %}
+            {% if evento.archivo %}
+              <a href="{{ evento.archivo }}" class="btn btn-sm btn-secondary evt-btn" download><i class="bi bi-paperclip me-1"></i>Archivo</a>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <div class="mt-4">
+            <a href="{% url 'core:eventos' %}" class="btn btn-outline-success evt-btn"><i class="bi bi-arrow-left"></i> Volver a eventos</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

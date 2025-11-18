@@ -1,0 +1,792 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}GIESE - Universidad{% endblock %}</title>
+  <meta name="description" content="Grupo de Investigación y Extensión en Educación - Universidad Nacional de Mar del Plata">
+  <meta name="keywords" content="GIESE, investigación, educación, universidad, extensión universitaria">
+
+  <!-- Preload fonts and critical resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- CSS externos -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.2/css/hover-min.css" rel="stylesheet">
+
+  {% block head %}{% endblock %}
+
+  <style>
+    :root {
+      --primary-color: #1a4d2e;
+      --secondary-color: #4a7c59;
+      --accent-color: #7fc242;
+      --gold-color: #d4af37;
+      --light-bg: #f8fffe;
+      --dark-text: #2c3e50;
+      --light-text: #6c757d;
+      --shadow-light: 0 4px 20px rgba(26, 77, 46, 0.08);
+      --shadow-medium: 0 8px 32px rgba(26, 77, 46, 0.12);
+      --shadow-heavy: 0 16px 64px rgba(26, 77, 46, 0.16);
+      --border-radius: 12px;
+      --border-radius-lg: 20px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%), 
+                  url('https://i.ibb.co/KxLDfdyK/fondo-inicio.jpg') no-repeat center center fixed;
+      background-size: cover;
+      background-attachment: fixed;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      line-height: 1.6;
+      color: var(--dark-text);
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(1px) saturate(1.1);
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .container-fluid, .container { 
+      position: relative; 
+      z-index: 1; 
+    }
+
+    /* Enhanced Navigation */
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%) !important;
+      backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 8px 32px rgba(26, 77, 46, 0.15), 
+                  0 2px 8px rgba(0, 0, 0, 0.05);
+      border-radius: 0 0 2rem 2rem;
+      animation: navbarSlideIn 1s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 1rem 0;
+      border: none;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    @keyframes navbarSlideIn {
+      from { 
+        opacity: 0; 
+        transform: translateY(-100%) scale(0.95);
+        filter: blur(10px);
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    .navbar-brand {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      transition: var(--transition);
+      transform-style: preserve-3d;
+    }
+
+    .navbar-brand img {
+      height: 85px;
+      width: auto;
+      margin-right: 15px;
+      filter: drop-shadow(0 4px 12px rgba(26, 77, 46, 0.25)) 
+              brightness(1.1) saturate(1.2);
+      transition: var(--transition), transform 0.3s ease;
+      object-fit: contain;
+    }
+
+    .navbar-brand:hover img { 
+      transform: scale(1.12) rotate(-2deg) translateZ(0);
+      filter: drop-shadow(0 6px 20px rgba(26, 77, 46, 0.35));
+    }
+
+    .navbar-nav {
+      font-weight: 500;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-weight: 500;
+      padding: 0.75rem 1.25rem !important;
+      border-radius: 25px;
+      margin: 0 0.15rem;
+      transition: var(--transition), transform 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .navbar-nav .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: inherit;
+      opacity: 0;
+      transition: var(--transition);
+      transform: scale(0.8);
+    }
+
+    .navbar-nav .nav-link:hover::before,
+    .navbar-nav .nav-link.active::before {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+      color: #ffffff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Mobile Menu Scrollable */
+    @media (max-width: 991.98px) {
+      .navbar-collapse {
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 1rem;
+      }
+      
+      .navbar-collapse::-webkit-scrollbar {
+        width: 4px;
+      }
+      
+      .navbar-collapse::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      
+      .navbar-collapse::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+      }
+      
+      .navbar-nav {
+        padding: 0.5rem 0;
+      }
+      
+      .navbar-nav .nav-link {
+        padding: 0.75rem 1rem !important;
+        margin: 0.25rem 0;
+      }
+    }
+
+    /* Dropdown Menu Styles */
+    .navbar .dropdown-menu {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(26, 77, 46, 0.15);
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      min-width: 220px;
+    }
+    
+    .navbar .dropdown-item {
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      transition: all 0.2s ease;
+      color: var(--dark-text);
+      font-weight: 500;
+    }
+    
+    .navbar .dropdown-item:hover {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      transform: translateX(5px);
+    }
+    
+    .navbar .dropdown-item.text-danger:hover {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+    }
+    
+    /* Mobile Dropdown Fix */
+    @media (max-width: 991.98px) {
+      .navbar .dropdown-menu {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.95);
+        margin-top: 0.25rem;
+        margin-bottom: 0.5rem;
+        max-height: calc(100vh - 250px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .navbar .dropdown-menu.show {
+        display: block !important;
+        position: static !important;
+        float: none !important;
+        width: auto !important;
+        margin-top: 0 !important;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        box-shadow: none;
+      }
+      
+      .navbar .dropdown-item {
+        color: rgba(255, 255, 255, 0.9);
+        padding-left: 2rem;
+        white-space: normal;
+        word-wrap: break-word;
+      }
+      
+      .navbar .dropdown-item:hover,
+      .navbar .dropdown-item:active {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+      
+      /* Custom scrollbar for dropdown */
+      .navbar .dropdown-menu::-webkit-scrollbar {
+        width: 4px;
+      }
+      
+      .navbar .dropdown-menu::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+      }
+      
+      .navbar .dropdown-menu::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+      }
+      
+      .navbar .dropdown-menu::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+      
+      /* Scroll indicator for dropdown - only shows when has-scroll class */
+      .navbar .dropdown-menu.has-scroll::after {
+        content: '⌄ Desliza para ver más';
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.4));
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.5rem 0;
+        pointer-events: none;
+        display: block;
+        animation: scrollHint 2s ease-in-out infinite;
+        backdrop-filter: blur(5px);
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+      
+      @keyframes scrollHint {
+        0%, 100% {
+          opacity: 0.7;
+          transform: translateY(0);
+        }
+        50% {
+          opacity: 1;
+          transform: translateY(3px);
+        }
+      }
+    }
+
+    /* Enhanced Cards */
+    .card {
+      border: none;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-light);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px) saturate(180%);
+      transition: var(--transition), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--gold-color));
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .card:hover {
+      transform: translateY(-12px) scale(1.03);
+      box-shadow: var(--shadow-heavy);
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    /* Enhanced Buttons */
+    .btn {
+      border-radius: 25px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: var(--transition);
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transition: all 0.6s ease;
+      transform: translate(-50%, -50%);
+    }
+
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      box-shadow: 0 4px 15px rgba(26, 77, 46, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(26, 77, 46, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+      color: white;
+      box-shadow: 0 4px 15px rgba(127, 194, 66, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(127, 194, 66, 0.4);
+    }
+
+    .bg-light { 
+      background: var(--light-bg) !important; 
+    }
+    
+    .bg-white { 
+      background: #ffffff !important; 
+    }
+
+    /* Text Selection */
+    ::selection {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--light-bg);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--secondary-color);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-color);
+    }
+
+    /* Loading Animation */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--light-bg);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--light-bg);
+      border-top: 3px solid var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+      .navbar-brand img {
+        height: 65px;
+      }
+      
+      .card { 
+        margin: 8px;
+      }
+      
+      .btn {
+        padding: 0.75rem 1.5rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .navbar-brand img {
+        height: 55px;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Loading Screen -->
+<div id="loading-screen" class="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Enhanced Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark mb-4 animate__animated animate__fadeInDown" aria-label="Principal">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'core:inicio' %}">
+      <img src="https://i.postimg.cc/bJpNc6Sg/Imagen-de-WhatsApp-2025-09-02-a-las-19-28-04-0de519aa.png"
+           alt="Logo GIESE" id="logo-giese">
+      <span class="ms-3 fw-bold" style="font-family: 'Playfair Display', serif; font-size: 1.4rem;">
+        GIESE
+      </span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir navegación">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:inicio' %}">
+          <i class="bi bi-house-door me-1"></i>Inicio
+        </a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:equipo' %}">
+          <i class="bi bi-people me-1"></i>Nuestro Equipo
+        </a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:noticias' %}">
+          <i class="bi bi-newspaper me-1"></i>Noticias
+        </a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:investigacion' %}">
+          <i class="bi bi-search me-1"></i>Investigación
+        </a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:publicaciones' %}">
+          <i class="bi bi-book me-1"></i>Publicaciones
+        </a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:eventos' %}">
+          <i class="bi bi-calendar-event me-1"></i>Eventos
+        </a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:contacto' %}">
+          <i class="bi bi-envelope me-1"></i>Contacto
+        </a></li>
+      </ul>
+      
+      <!-- Right side of navbar -->
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-gear me-1"></i>Admin Panel
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'core:panel_equipo' %}">
+                <i class="bi bi-people me-2"></i>Panel equipo
+              </a></li>
+              <li><a class="dropdown-item" href="{% url 'core:panel_noticias' %}">
+                <i class="bi bi-newspaper me-2"></i>Panel noticias
+              </a></li>
+              <li><a class="dropdown-item" href="{% url 'core:panel_investigacion' %}">
+                <i class="bi bi-search me-2"></i>Panel investigación
+              </a></li>
+              <li><a class="dropdown-item" href="{% url 'core:panel_publicaciones' %}">
+                <i class="bi bi-book me-2"></i>Panel publicaciones
+              </a></li>
+              <li><a class="dropdown-item" href="{% url 'core:panel_eventos' %}">
+                <i class="bi bi-calendar-event me-2"></i>Panel eventos
+              </a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="{% url 'core:logout' %}">
+                <i class="bi bi-box-arrow-right me-2"></i>Salir
+              </a></li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link btn btn-outline-light px-3 py-2" href="{% url 'core:login' %}">
+              <i class="bi bi-person-circle me-1"></i>Login
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid px-4 animate__animated animate__fadeInUp" data-aos="fade-up">
+  {% include "core/_messages.html" %}
+  {% block content %}{% endblock %}
+</div>
+
+<!-- Back to Top Button -->
+<button class="btn btn-primary position-fixed" 
+        style="bottom: 20px; right: 20px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; 
+               box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none;" 
+        id="backToTop" 
+        title="Volver arriba">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- Footer -->
+<footer class="bg-light text-center text-lg-start my-5">
+  <div class="text-center p-4" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h5 class="mb-2" style="font-family: 'Playfair Display', serif;">GIESE</h5>
+          <p class="mb-1">Grupo de Investigación y Extensión en Educación</p>
+          <p class="small mb-0">Universidad Nacional de Mar del Plata</p>
+        </div>
+        <div class="col-md-6">
+          <div class="d-flex justify-content-center justify-content-md-end gap-3">
+            <a href="mailto:gieseunmdp@gmail.com" class="text-white">
+              <i class="bi bi-envelope fs-4"></i>
+            </a>
+            <a href="#" class="text-white">
+              <i class="bi bi-linkedin fs-4"></i>
+            </a>
+            <a href="#" class="text-white">
+              <i class="bi bi-facebook fs-4"></i>
+            </a>
+          </div>
+          <p class="small mt-2 mb-0">Funes 3350, Mar del Plata, Argentina</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- JS Libs -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+  // Loading screen and AOS initialization
+  document.addEventListener("DOMContentLoaded", function() {
+    // Hide loading screen
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+      setTimeout(() => {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => loadingScreen.style.display = 'none', 500);
+      }, 1000);
+    }
+    
+    // Initialize AOS with enhanced settings
+    AOS.init({
+      duration: 900,
+      once: true,
+      offset: 100,
+      easing: 'ease-out-cubic'
+    });
+    
+    // Back to top functionality
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 300) {
+        backToTopBtn.style.display = 'block';
+        backToTopBtn.classList.add('animate__animated', 'animate__fadeInUp');
+      } else {
+        backToTopBtn.style.display = 'none';
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', function() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // Enhanced mobile navigation - NO duplicar funcionalidad de Bootstrap
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    
+    // Auto-close mobile menu when clicking on a link (excepto dropdown toggles)
+    document.querySelectorAll('.navbar-nav .nav-link:not(.dropdown-toggle)').forEach(link => {
+      link.addEventListener('click', () => {
+        if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+          const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+            toggle: true
+          });
+        }
+      });
+    });
+    
+    // Fix dropdown behavior on mobile
+    document.querySelectorAll('.navbar .dropdown').forEach(dropdown => {
+      dropdown.addEventListener('click', function(e) {
+        // En móvil, permitir que el dropdown funcione correctamente
+        if (window.innerWidth < 992) {
+          e.stopPropagation();
+        }
+      });
+    });
+    
+    // Show scroll indicator in dropdown when there's overflow
+    function updateDropdownScrollIndicator() {
+      const dropdowns = document.querySelectorAll('.navbar .dropdown-menu');
+      dropdowns.forEach(dropdown => {
+        if (window.innerWidth < 992) {
+          const hasOverflow = dropdown.scrollHeight > dropdown.clientHeight;
+          const isScrolledToBottom = dropdown.scrollHeight - dropdown.scrollTop <= dropdown.clientHeight + 5;
+          
+          if (hasOverflow && !isScrolledToBottom) {
+            dropdown.classList.add('has-scroll');
+          } else {
+            dropdown.classList.remove('has-scroll');
+          }
+          
+          // Update on scroll
+          dropdown.addEventListener('scroll', function() {
+            const isAtBottom = this.scrollHeight - this.scrollTop <= this.clientHeight + 5;
+            if (isAtBottom) {
+              this.classList.remove('has-scroll');
+            } else if (hasOverflow) {
+              this.classList.add('has-scroll');
+            }
+          });
+        }
+      });
+    }
+    
+    // Update indicator when dropdown opens
+    document.querySelectorAll('.navbar .dropdown').forEach(dropdown => {
+      dropdown.addEventListener('shown.bs.dropdown', updateDropdownScrollIndicator);
+    });
+    
+    window.addEventListener('resize', updateDropdownScrollIndicator);
+    
+    // Text expandible functionality
+    document.querySelectorAll(".card").forEach(card => {
+      const btn = card.querySelector(".toggle-btn");
+      const fullText = card.querySelector(".text.full");
+      if (btn && fullText) {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          fullText.classList.toggle("open");
+          btn.textContent = fullText.classList.contains("open") ? 
+            "Leer menos 📖" : "Leer más 📖";
+        });
+      }
+    });
+    
+    // Mark active nav links
+    const currentPath = location.pathname.replace(/\/+$/, '/');
+    document.querySelectorAll('.navbar .nav-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (currentPath === href || 
+          (href !== '#' && href !== '#' && currentPath.startsWith(href)))) {
+        link.classList.add('active');
+        
+        // If in a dropdown, mark parent too
+        const dropdownToggle = link.closest('.dropdown-toggle');
+        if (dropdownToggle) {
+          dropdownToggle.classList.add('active');
+        }
+      }
+    });
+    
+    // Enhanced touch interactions for mobile
+    if ('ontouchstart' in window) {
+      document.body.classList.add('touch-device');
+    }
+    
+    // Lazy loading enhancement for images
+    const images = document.querySelectorAll('img[data-src]');
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src;
+          img.classList.remove('loading');
+          observer.unobserve(img);
+        }
+      });
+    });
+    
+    images.forEach(img => imageObserver.observe(img));
+  });
+  
+  // Intersection Observer for scroll animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+      }
+    });
+  }, observerOptions);
+  
+  document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+</script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

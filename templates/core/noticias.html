@@ -1,0 +1,508 @@
+{% extends 'base.html' %}
+{% block title %}Noticias | GIESE{% endblock %}
+
+{% block head %}
+<style>
+  :root {
+    --news-primary: #1a4d2e;
+    --news-secondary: #4a7c59;
+    --news-accent: #7fc242;
+    --news-light: #f8fffe;
+    --shadow-cards: 0 8px 32px rgba(26, 77, 46, 0.08);
+    --border-radius: 20px;
+  }
+
+  .news-page {
+    min-height: 100vh;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(127, 194, 66, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(26, 77, 46, 0.05) 0%, transparent 50%);
+  }
+
+  .hero-news {
+    background: linear-gradient(135deg, 
+      var(--news-primary) 0%, 
+      var(--news-secondary) 50%, 
+      var(--news-accent) 100%);
+    color: white;
+    padding: 4rem 0 6rem;
+    border-radius: 0 0 3rem 3rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(26, 77, 46, 0.3);
+  }
+
+  .hero-news::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    animation: newsPattern 20s linear infinite;
+  }
+
+  @keyframes newsPattern {
+    0% { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(-60px) translateX(-60px); }
+  }
+
+  .hero-content h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .noticia-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px) saturate(150%);
+    border-radius: var(--border-radius);
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--shadow-cards);
+    border: 2px solid transparent;
+    overflow: hidden;
+    position: relative;
+    transform: translateY(0) scale(1);
+  }
+
+  .noticia-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 20px 60px rgba(26, 77, 46, 0.15);
+    border-color: var(--news-accent);
+    background: rgba(255, 255, 255, 1);
+  }
+
+  .noticia-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+      var(--news-primary), 
+      var(--news-accent));
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+  }
+
+  .noticia-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .noticia-image {
+    height: 280px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, var(--news-light) 0%, #e8f5e8 100%);
+  }
+
+  .noticia-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: brightness(0.95) saturate(0.9);
+  }
+
+  .noticia-card:hover .noticia-image img {
+    transform: scale(1.08) rotate(1deg);
+    filter: brightness(1) saturate(1.1);
+  }
+
+  /* Carrusel de imágenes */
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 40px;
+    height: 40px;
+    background: rgba(26, 77, 46, 0.8);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .noticia-card:hover .carousel-control-prev,
+  .noticia-card:hover .carousel-control-next {
+    opacity: 1;
+  }
+
+  .carousel-control-prev {
+    left: 10px;
+  }
+
+  .carousel-control-next {
+    right: 10px;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .carousel-indicators {
+    bottom: 10px;
+  }
+
+  .carousel-indicators [data-bs-target] {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+
+  .carousel-indicators .active {
+    background-color: var(--news-accent);
+  }
+
+  /* Video responsivo */
+  .noticia-video {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .noticia-video iframe,
+  .noticia-video video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+  }
+
+  .noticia-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--news-secondary);
+    font-size: 4rem;
+    background: linear-gradient(45deg, var(--news-light) 0%, #e9f5e9 100%);
+  }
+
+  .noticia-content {
+    padding: 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .noticia-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--news-primary);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+  }
+
+  .noticia-card:hover .noticia-title {
+    color: var(--news-accent);
+  }
+
+  .noticia-text {
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+
+  .noticia-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    margin-top: auto;
+  }
+
+  .noticia-date {
+    color: var(--news-secondary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .noticia-date i {
+    color: var(--news-accent);
+  }
+
+  .read-more {
+    background: linear-gradient(135deg, var(--news-accent), var(--news-secondary));
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .read-more:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(127, 194, 66, 0.3);
+    color: white;
+  }
+
+  .no-news {
+    text-align: center;
+    padding: 6rem 2rem;
+    background: rgba(248, 255, 254, 0.8);
+    border-radius: var(--border-radius);
+    border: 2px dashed var(--news-accent);
+  }
+
+  .no-news i {
+    font-size: 4rem;
+    color: var(--news-accent);
+    margin-bottom: 1rem;
+  }
+
+  .no-news h3 {
+    color: var(--news-primary);
+    margin-bottom: 1rem;
+  }
+
+  .no-news p {
+    color: var(--news-secondary);
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero-content h1 {
+      font-size: 2.5rem;
+    }
+    
+    .noticia-image {
+      height: 240px;
+    }
+    
+    .noticia-content {
+      padding: 2rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="news-page">
+  <!-- Hero Section -->
+  <div class="hero-news">
+    <div class="container">
+      <div class="hero-content text-center">
+        <h1 class="animate__animated animate__fadeInDown" data-aos="fade-down">
+          Noticias
+        </h1>
+        <p class="lead fs-4 animate__animated animate__fadeInUp" data-aos="fade-up" style="animation-delay: 0.3s;">
+          Mantente informado sobre las últimas novedades y actividades de GIESE
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- News Grid -->
+  <div class="container py-5">
+    {% if noticias %}
+      <div class="row g-4 justify-content-center">
+        {% for noticia in noticias %}
+          <div class="col-12 col-md-8 col-lg-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+            <article class="noticia-card h-100 d-flex flex-column animate__animated animate__fadeInUp">
+              
+              <!-- Image Section with Carousel -->
+              <div class="noticia-image">
+                {% if noticia.all_images %}
+                  <!-- Carrusel para todas las imágenes (principal + adicionales) -->
+                  <div id="carousel-{{ noticia.id }}" class="carousel slide" data-bs-ride="false">
+                    
+                    {% if noticia.all_images|length > 1 %}
+                    <div class="carousel-indicators">
+                      {% for img in noticia.all_images %}
+                      <button type="button" data-bs-target="#carousel-{{ noticia.id }}" 
+                              data-bs-slide-to="{{ forloop.counter0 }}" 
+                              {% if forloop.first %}class="active"{% endif %}
+                              aria-current="{% if forloop.first %}true{% endif %}" 
+                              aria-label="Imagen {{ forloop.counter }}"></button>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="carousel-inner">
+                      {% for img in noticia.all_images %}
+                      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ img.imagen.url }}" class="d-block w-100" alt="Imagen de la noticia: {{ noticia.titulo }}" loading="lazy">
+                      </div>
+                      {% endfor %}
+                    </div>
+
+                    {% if noticia.all_images|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ noticia.id }}" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ noticia.id }}" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Siguiente</span>
+                    </button>
+                    {% endif %}
+                  </div>
+                {% else %}
+                  <!-- Placeholder si no hay ninguna imagen -->
+                  <div class="noticia-placeholder">
+                    <i class="bi bi-newspaper"></i>
+                  </div>
+                {% endif %}
+              </div>
+              
+              <!-- Content Section -->
+              <div class="noticia-content flex-grow-1 d-flex flex-column">
+                <h2 class="noticia-title">{{ noticia.titulo }}</h2>
+                
+                <!-- Video (si existe) -->
+                {% if noticia.video %}
+                <div class="noticia-video mb-3">
+                  <video controls>
+                    <source src="{{ noticia.video.url }}" type="video/mp4">
+                    Tu navegador no soporta el elemento de video.
+                  </video>
+                </div>
+                {% endif %}
+                
+                <div class="noticia-text">
+                  {{ noticia.contenido|linebreaksbr }}
+                </div>
+                
+                <!-- Meta Information -->
+                <div class="noticia-meta">
+                  <div class="noticia-date">
+                    <i class="bi bi-calendar3"></i>
+                    <span>{{ noticia.fecha|date:"d M Y" }}</span>
+                  </div>
+                  
+                  {% if noticia.user %}
+                  <div class="noticia-author text-muted small">
+                    <i class="bi bi-person-circle me-1"></i>
+                    {{ noticia.user.get_full_name|default:noticia.user.username }}
+                  </div>
+                  {% endif %}
+                  
+                  <button class="read-more">
+                    <i class="bi bi-arrow-right me-1"></i>Leer más
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- Empty State -->
+      <div class="no-news">
+        <i class="bi bi-newspaper"></i>
+        <h3>Aún no hay noticias publicadas</h3>
+        <p>Pronto compartiremos las últimas novedades de nuestra institución.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Enhanced news card animations
+  const newsCards = document.querySelectorAll('.noticia-card');
+  
+  // Staggered animation on load
+  newsCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(40px) scale(0.95)';
+    
+    setTimeout(() => {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0) scale(1)';
+      card.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+    }, index * 150);
+  });
+  
+  // Enhanced hover interactions
+  newsCards.forEach(card => {
+    // Enhanced hover effects for desktop
+    if (window.innerWidth > 768) {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-12px) scale(1.03)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    }
+    
+    // Touch interactions for mobile
+    if (window.innerWidth <= 768) {
+      card.addEventListener('touchstart', function() {
+        this.style.transform = 'translateY(-8px) scale(1.02)';
+      });
+      
+      card.addEventListener('touchend', function() {
+        setTimeout(() => {
+          this.style.transform = 'translateY(0) scale(1)';
+        }, 200);
+      });
+    }
+  });
+  
+  // Read more button functionality
+  const readMoreBtns = document.querySelectorAll('.read-more');
+  readMoreBtns.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const card = this.closest('.noticia-card');
+      const content = card.querySelector('.noticia-text');
+      const isExpanded = content.style.maxHeight;
+      
+      if (isExpanded) {
+        // Collapse
+        content.style.maxHeight = '';
+        this.innerHTML = '<i class="bi bi-arrow-right me-1"></i>Leer más';
+        card.style.transform = 'translateY(0) scale(1)';
+      } else {
+        // Expand
+        content.style.maxHeight = content.scrollHeight + 'px';
+        content.style.transition = 'max-height 0.5s ease';
+        this.innerHTML = '<i class="bi bi-arrow-up me-1"></i>Leer menos';
+        
+        // Scroll to card if needed
+        card.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+    });
+  });
+  
+  // Image loading optimization
+  const images = document.querySelectorAll('.noticia-image img');
+  images.forEach(img => {
+    img.addEventListener('load', function() {
+      this.style.filter = 'brightness(1) saturate(1.1)';
+      this.style.transition = 'filter 0.3s ease';
+    });
+    
+    img.addEventListener('error', function() {
+      const placeholder = this.parentElement.querySelector('.noticia-placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'flex';
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

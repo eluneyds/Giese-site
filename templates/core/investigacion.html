@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Investigación | GIESE{% endblock %}
+
+{% block head %}
+<style>
+  :root {
+    --research-primary: #1a4d2e;
+    --research-secondary: #4a7c59;
+    --research-accent: #7fc242;
+    --research-gold: #d4af37;
+    --research-light: #f8fffe;
+    --shadow-soft: 0 8px 32px rgba(26, 77, 46, 0.08);
+    --border-radius: 20px;
+  }
+
+  .research-page {
+    min-height: 100vh;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(127, 194, 66, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(26, 77, 46, 0.05) 0%, transparent 50%);
+  }
+
+  .hero-research {
+    background: linear-gradient(135deg, 
+      var(--research-primary) 0%, 
+      var(--research-secondary) 50%, 
+      var(--research-accent) 100%);
+    color: white;
+    padding: 4rem 0 6rem;
+    border-radius: 0 0 3rem 3rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(26, 77, 46, 0.3);
+  }
+
+  .hero-research::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M0 40C20 0 60 10 80 40C60 80 20 70 0 40z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    animation: researchPattern 25s linear infinite;
+  }
+
+  @keyframes researchPattern {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-80px) rotate(360deg); }
+  }
+
+  .hero-content h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .investigacion-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px) saturate(150%);
+    border-radius: var(--border-radius);
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--shadow-soft);
+    border: 2px solid transparent;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transform: translateY(0) scale(1);
+  }
+
+  .investigacion-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 20px 60px rgba(26, 77, 46, 0.15);
+    border-color: var(--research-accent);
+  }
+
+  .investigacion-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+      var(--research-primary), 
+      var(--research-accent), 
+      var(--research-gold));
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+  }
+
+  .investigacion-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .investigacion-image {
+    height: 280px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, var(--research-light) 0%, #e8f5e8 100%);
+  }
+
+  .investigacion-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: brightness(0.95) saturate(0.9);
+  }
+
+  .investigacion-card:hover .investigacion-image img {
+    transform: scale(1.1) rotate(1deg);
+    filter: brightness(1) saturate(1.1);
+  }
+
+  .investigacion-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--research-secondary);
+    font-size: 4rem;
+    background: linear-gradient(45deg, var(--research-light) 0%, #e9f5e9 100%);
+  }
+
+  .investigacion-content {
+    padding: 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .investigacion-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--research-primary);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+  }
+
+  .investigacion-card:hover .investigacion-title {
+    color: var(--research-accent);
+  }
+
+  .short-text {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  .full-text {
+    color: #555;
+    line-height: 1.7;
+    font-size: 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease, padding 0.4s ease;
+    background: rgba(248, 255, 254, 0.5);
+    border-radius: 8px;
+    margin-top: 1rem;
+    padding: 0 1rem;
+  }
+
+  .full-text.open {
+    max-height: 1000px;
+    padding: 1.5rem 1rem;
+  }
+
+  .investigacion-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 1rem;
+  }
+
+  .investigacion-date {
+    color: var(--research-secondary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .investigacion-date i {
+    color: var(--research-accent);
+  }
+
+  .download-btn {
+    background: linear-gradient(135deg, var(--research-accent), var(--research-secondary));
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(127, 194, 66, 0.3);
+    color: white;
+  }
+
+  .no-research {
+    text-align: center;
+    padding: 6rem 2rem;
+    background: rgba(248, 255, 254, 0.8);
+    border-radius: var(--border-radius);
+    border: 2px dashed var(--research-accent);
+  }
+
+  .no-research i {
+    font-size: 4rem;
+    color: var(--research-accent);
+    margin-bottom: 1rem;
+  }
+
+  .no-research h3 {
+    color: var(--research-primary);
+    margin-bottom: 1rem;
+  }
+
+  .no-research p {
+    color: var(--research-secondary);
+    font-size: 1.1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="research-page">
+  <!-- Hero Section -->
+  <div class="hero-research">
+    <div class="container">
+      <div class="hero-content text-center">
+        <h1 class="animate__animated animate__fadeInDown" data-aos="fade-down">
+          Investigación
+        </h1>
+        <p class="lead fs-4 animate__animated animate__fadeInUp" data-aos="fade-up" style="animation-delay: 0.3s;">
+          Explora nuestros proyectos de investigación y trabajos académicos
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Research Grid -->
+  <div class="container py-5">
+    {% if investigaciones %}
+      <div class="row g-4 justify-content-center">
+        {% for inv in investigaciones %}
+          <div class="col-12 col-md-8 col-lg-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+            <a href="{% url 'core:investigacion_detalle' inv.pk %}" class="text-decoration-none text-reset">
+            <article class="investigacion-card h-100 d-flex flex-column animate__animated animate__fadeInUp">
+              
+              <!-- Image Section -->
+              <div class="investigacion-image">
+                {% static "img/user-placeholder.png" as inv_placeholder %}
+                {% if inv.imagen_portada %}
+                  <img src="{{ inv.imagen_portada.url }}" alt="{{ inv.titulo }}" loading="lazy" onerror="this.onerror=null;this.src='{{ inv_placeholder }}';">
+                {% else %}
+                  {% for foto in inv.fotos.all|slice:":1" %}
+                    <img src="{{ foto.foto.url }}" alt="{{ inv.titulo }}" loading="lazy" onerror="this.onerror=null;this.src='{{ inv_placeholder }}';">
+                  {% empty %}
+                  <div class="investigacion-placeholder">
+                    <i class="bi bi-search"></i>
+                  </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+              
+              <!-- Content Section -->
+              <div class="investigacion-content flex-grow-1 d-flex flex-column">
+                <h2 class="investigacion-title">{{ inv.titulo }}</h2>
+                
+                <div class="short-text">
+                  {{ inv.descripcion|truncatewords:20 }}
+                </div>
+
+                <div class="full-text">
+                  {{ inv.descripcion|linebreaksbr }}
+                </div>
+                
+                <!-- Actions Section -->
+                <div class="investigacion-actions">
+                  <div class="investigacion-date">
+                    <i class="bi bi-calendar3"></i>
+                    <span>{{ inv.fecha|date:"d M Y" }}</span>
+                  </div>
+                  
+                  {% if inv.archivos.all|length %}
+                    <a href="{% url 'core:investigacion_detalle' inv.pk %}"
+                       class="download-btn">
+                      <i class="bi bi-download me-1"></i>Ver/Descargar
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </article>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- Empty State -->
+      <div class="no-research">
+        <i class="bi bi-search"></i>
+        <h3>Aún no hay investigaciones disponibles</h3>
+        <p>Pronto compartiremos nuestros proyectos de investigación y trabajos académicos.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+function toggleResearch(card) {
+  const fullText = card.querySelector('.full-text');
+  const shortText = card.querySelector('.short-text');
+  
+  if (fullText && shortText) {
+    const isOpen = fullText.classList.contains('open');
+    
+    if (isOpen) {
+      fullText.classList.remove('open');
+      card.style.transform = 'translateY(0) scale(1)';
+    } else {
+      fullText.classList.add('open');
+      card.style.transform = 'translateY(-8px) scale(1.02)';
+      
+      // Scroll to card smoothly
+      card.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Enhanced card animations
+  const researchCards = document.querySelectorAll('.investigacion-card');
+  
+  // Staggered animation on load
+  researchCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(40px) scale(0.95)';
+    
+    setTimeout(() => {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0) scale(1)';
+      card.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+    }, index * 150);
+  });
+  
+  // Enhanced interactions
+  researchCards.forEach(card => {
+    // Desktop hover effects
+    if (window.innerWidth > 768) {
+      card.addEventListener('mouseenter', function() {
+        if (!this.querySelector('.full-text').classList.contains('open')) {
+          this.style.transform = 'translateY(-8px) scale(1.02)';
+        }
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        if (!this.querySelector('.full-text').classList.contains('open')) {
+          this.style.transform = 'translateY(0) scale(1)';
+        }
+      });
+    }
+  });
+  
+  // Image loading optimization
+  const images = document.querySelectorAll('.investigacion-image img');
+  images.forEach(img => {
+    img.addEventListener('load', function() {
+      this.style.filter = 'brightness(1) saturate(1.1)';
+      this.style.transition = 'filter 0.3s ease';
+    });
+    
+    img.addEventListener('error', function() {
+      const placeholder = this.parentElement.querySelector('.investigacion-placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'flex';
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

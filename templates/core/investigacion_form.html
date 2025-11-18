@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .dynamic-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .dynamic-section h5 {
+    color: #1a4d2e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .dynamic-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+  }
+  .btn-remove-item {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  .btn-add-more {
+    background: linear-gradient(135deg, #7fc242, #4a7c59);
+    border: none;
+    color: white;
+    font-weight: 500;
+  }
+  .btn-add-more:hover {
+    background: linear-gradient(135deg, #6ba835, #3a6348);
+    color: white;
+  }
+</style>
+
+<div class="row justify-content-center">
+  <div class="col-md-10 col-lg-9">
+    <div class="card shadow rounded-4 mt-5 animate__animated animate__fadeInUp">
+      <div class="card-body p-4">
+        <h2 class="mb-4 text-center text-success">
+          <i class="bi bi-search me-2"></i>{{ accion }} investigación
+        </h2>
+        
+        {% include 'core/_messages.html' %}
+        
+        <form method="post" enctype="multipart/form-data" id="investigacionForm">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          
+          <!-- Título -->
+          <div class="mb-3">
+            {{ form.titulo.label_tag }}
+            {{ form.titulo }}
+            {{ form.titulo.errors }}
+          </div>
+          
+          <!-- Descripción -->
+          <div class="mb-3">
+            {{ form.descripcion.label_tag }}
+            {{ form.descripcion }}
+            {{ form.descripcion.errors }}
+          </div>
+          
+          <!-- Imagen de Portada -->
+          <div class="mb-3">
+            {{ form.imagen_portada.label_tag }}
+            {% if investigacion and investigacion.imagen_portada %}
+            <div class="mb-2">
+              <img src="{{ investigacion.imagen_portada.url }}" alt="Portada actual" class="img-thumbnail" style="max-height: 200px;">
+              <p class="text-muted small mt-1">Imagen actual. Sube una nueva para reemplazarla.</p>
+            </div>
+            {% endif %}
+            {{ form.imagen_portada }}
+            <small class="form-text text-muted">Imagen principal que se mostrará en la portada de la investigación</small>
+            {{ form.imagen_portada.errors }}
+          </div>
+          
+          <!-- Video de Portada -->
+          <div class="mb-3">
+            {{ form.video_portada.label_tag }}
+            {% if investigacion and investigacion.video_portada %}
+            <div class="mb-2">
+              <video controls class="w-100" style="max-height: 300px; border-radius: 8px;">
+                <source src="{{ investigacion.video_portada.url }}" type="video/mp4">
+                Tu navegador no soporta el elemento de video.
+              </video>
+              <p class="text-muted small mt-1">Video actual. Sube uno nuevo para reemplazarlo.</p>
+            </div>
+            {% endif %}
+            {{ form.video_portada }}
+            <small class="form-text text-muted">Video opcional para la portada (MP4, WebM, etc.)</small>
+            {{ form.video_portada.errors }}
+          </div>
+          
+          <!-- Fotos (dinámicas) -->
+          <div class="dynamic-section">
+            <h5><i class="bi bi-images me-2"></i>Fotos de la investigación</h5>
+            
+            {% if investigacion %}
+            <div class="mb-3">
+              <label class="form-label">Fotos actuales:</label>
+              <div class="row g-2">
+                {% for foto in investigacion.fotos.all %}
+                <div class="col-4 col-md-3">
+                  <img src="{{ foto.foto.url }}" alt="Foto {{ forloop.counter }}" class="img-thumbnail" style="width: 100%; height: 100px; object-fit: cover;">
+                </div>
+                {% empty %}
+                <div class="col-12">
+                  <p class="text-muted small">No hay fotos</p>
+                </div>
+                {% endfor %}
+              </div>
+              <p class="text-muted small mt-2">Para cambiar, sube nuevas fotos abajo</p>
+            </div>
+            {% endif %}
+            
+            <div id="fotos-container">
+              <div class="dynamic-item">
+                <label class="form-label">Seleccionar foto</label>
+                <input type="file" name="fotos" class="form-control" accept="image/*">
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-add-more" onclick="addFotoField()">
+              <i class="bi bi-plus-circle me-1"></i>Agregar otra foto
+            </button>
+          </div>
+          
+          <!-- Archivos/PDFs (dinámicos) -->
+          <div class="dynamic-section">
+            <h5><i class="bi bi-file-earmark-pdf me-2"></i>Archivos (PDFs, documentos)</h5>
+            
+            {% if investigacion %}
+            <div class="mb-3">
+              <label class="form-label">Archivos actuales:</label>
+              <ul class="list-group">
+                {% for archivo in investigacion.archivos.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span><i class="bi bi-file-earmark-text me-2"></i>{{ archivo.nombre }}</span>
+                  <a href="{{ archivo.archivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-download"></i>
+                  </a>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-muted">No hay archivos</li>
+                {% endfor %}
+              </ul>
+              <p class="text-muted small mt-2">Para cambiar, sube nuevos archivos abajo</p>
+            </div>
+            {% endif %}
+            
+            <div id="archivos-container">
+              <div class="dynamic-item">
+                <label class="form-label">Seleccionar archivo</label>
+                <input type="file" name="archivos" class="form-control mb-2" accept=".pdf,.doc,.docx">
+                <label class="form-label">Nombre del archivo</label>
+                <input type="text" name="archivo_nombre" class="form-control" placeholder="Ej: Informe final 2024">
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-add-more" onclick="addArchivoField()">
+              <i class="bi bi-plus-circle me-1"></i>Agregar otro archivo
+            </button>
+          </div>
+          
+          <!-- Integrantes (dinámicos) -->
+          <div class="dynamic-section">
+            <h5><i class="bi bi-people me-2"></i>Integrantes del equipo</h5>
+            
+            <div id="integrantes-container">
+              {% if investigacion %}
+                {% for integ in investigacion.investigacionintegrante_set.all %}
+                <div class="dynamic-item">
+                  <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item" onclick="removeItem(this)">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                  <label class="form-label">Seleccionar integrante</label>
+                  <select name="integrante_id" class="form-select mb-2">
+                    <option value="">-- Seleccionar --</option>
+                    {% for persona in equipo_list %}
+                    <option value="{{ persona.id }}" {% if persona.id == integ.integrante.id %}selected{% endif %}>
+                      {{ persona.nombre }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                  <label class="form-label">Rol en la investigación</label>
+                  <input type="text" name="integrante_rol" class="form-control" placeholder="Ej: Investigador principal" value="{{ integ.rol }}">
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="dynamic-item">
+                  <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item" onclick="removeItem(this)" style="display: none;">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                  <label class="form-label">Seleccionar integrante</label>
+                  <select name="integrante_id" class="form-select mb-2">
+                    <option value="">-- Seleccionar --</option>
+                    {% for persona in equipo_list %}
+                    <option value="{{ persona.id }}">{{ persona.nombre }}</option>
+                    {% endfor %}
+                  </select>
+                  <label class="form-label">Rol en la investigación</label>
+                  <input type="text" name="integrante_rol" class="form-control" placeholder="Ej: Investigador principal">
+                </div>
+              {% endif %}
+            </div>
+            <button type="button" class="btn btn-sm btn-add-more" onclick="addIntegranteField()">
+              <i class="bi bi-plus-circle me-1"></i>Agregar otro integrante
+            </button>
+          </div>
+          
+          <!-- Fecha -->
+          <div class="mb-3">
+            {{ form.fecha.label_tag }}
+            {{ form.fecha }}
+            <small class="form-text text-muted">Fecha de inicio o publicación de la investigación</small>
+            {{ form.fecha.errors }}
+          </div>
+          
+          <!-- Responsable (automático) -->
+          <div class="alert alert-info">
+            <i class="bi bi-person-check me-2"></i>
+            <strong>Responsable:</strong> {{ request.user.get_full_name|default:request.user.username }}
+          </div>
+          
+          <button type="submit" class="btn btn-success w-100 py-2">
+            <i class="bi bi-check-circle me-2"></i>{{ accion }} investigación
+          </button>
+          <a href="{% url 'core:panel_investigacion' %}" class="btn btn-outline-secondary w-100 mt-2">
+            <i class="bi bi-x-circle me-2"></i>Cancelar
+          </a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function addFotoField() {
+  const container = document.getElementById('fotos-container');
+  const newItem = document.createElement('div');
+  newItem.className = 'dynamic-item';
+  newItem.innerHTML = `
+    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item" onclick="removeItem(this)">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <label class="form-label">Seleccionar foto</label>
+    <input type="file" name="fotos" class="form-control" accept="image/*">
+  `;
+  container.appendChild(newItem);
+}
+
+function addArchivoField() {
+  const container = document.getElementById('archivos-container');
+  const newItem = document.createElement('div');
+  newItem.className = 'dynamic-item';
+  newItem.innerHTML = `
+    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item" onclick="removeItem(this)">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <label class="form-label">Seleccionar archivo</label>
+    <input type="file" name="archivos" class="form-control mb-2" accept=".pdf,.doc,.docx">
+    <label class="form-label">Nombre del archivo</label>
+    <input type="text" name="archivo_nombre" class="form-control" placeholder="Ej: Informe final 2024">
+  `;
+  container.appendChild(newItem);
+}
+
+function addIntegranteField() {
+  const container = document.getElementById('integrantes-container');
+  const newItem = document.createElement('div');
+  newItem.className = 'dynamic-item';
+  newItem.innerHTML = `
+    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item" onclick="removeItem(this)">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <label class="form-label">Seleccionar integrante</label>
+    <select name="integrante_id" class="form-select mb-2">
+      <option value="">-- Seleccionar --</option>
+      {% for persona in equipo_list %}
+      <option value="{{ persona.id }}">{{ persona.nombre }}</option>
+      {% endfor %}
+    </select>
+    <label class="form-label">Rol en la investigación</label>
+    <input type="text" name="integrante_rol" class="form-control" placeholder="Ej: Investigador principal">
+  `;
+  container.appendChild(newItem);
+}
+
+function removeItem(btn) {
+  const item = btn.closest('.dynamic-item');
+  const container = item.parentElement;
+  if (container.children.length > 1) {
+    item.remove();
+  }
+}
+</script>
+{% endblock %}

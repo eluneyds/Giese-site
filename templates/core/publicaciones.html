@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Publicaciones | GIESE{% endblock %}
+
+{% block head %}
+<style>
+  /* =================================== */
+  /*      General Page Enhancements      */
+  /* =================================== */
+  .hero-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 3rem 0;
+    text-align: center;
+  }
+
+  .hero-section h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+  }
+
+  .filter-section {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-lg);
+    margin-top: -2rem;
+    position: relative;
+    z-index: 10;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+  }
+
+  .search-box {
+    border-radius: 50px;
+    padding-left: 2.5rem;
+    border: 2px solid transparent;
+    transition: var(--transition);
+    background-color: #f1f5f9;
+  }
+
+  .search-box:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(26, 77, 46, 0.1);
+    background-color: white;
+  }
+
+  /* =================================== */
+  /*      Publication Card Design      */
+  /* =================================== */
+
+  .publication-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    border: 1px solid #e5e7eb;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .publication-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-heavy);
+    border-color: var(--secondary-color);
+  }
+
+  .card-img-container {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease-out;
+  }
+
+  .publication-card:hover .card-img-container img {
+    transform: scale(1.05);
+  }
+  
+  .card-img-placeholder {
+    font-size: 4rem;
+    color: #d1d5db;
+  }
+
+  .publication-card .card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--dark-text);
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.6em;
+  }
+
+  .card-authors {
+    font-size: 0.9rem;
+    color: var(--light-text);
+    margin-bottom: 1rem;
+    font-style: italic;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .team-preview {
+    margin-bottom: 1rem;
+  }
+
+  .team-preview-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+  }
+
+  .team-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .integrante-badge {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.3rem 0.75rem;
+    border-radius: 50px;
+    background-color: #eef2f6;
+    color: var(--dark-text);
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .integrante-badge:hover {
+    background-color: var(--secondary-color);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .card-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+  }
+
+  .card-date {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--light-text);
+  }
+
+  .btn-details {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .btn-details:hover {
+    color: var(--accent-color);
+  }
+  
+  .btn-details i {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .btn-details:hover i {
+    transform: translateX(4px);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius-lg);
+    margin-top: 2rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section animate__animated animate__fadeIn">
+  <div class="container">
+    <h1 class="display-4">Publicaciones</h1>
+    <p class="lead">Explora nuestras contribuciones al conocimiento y la investigación.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="filter-section animate__animated animate__fadeInUp">
+    <div class="row align-items-center g-3">
+      <div class="col-md-8">
+        <div class="position-relative">
+          <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+          <input type="text" class="form-control search-box" placeholder="Buscar por título, autor..." id="searchInput">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select search-box" id="filterYear" aria-label="Filtrar por año">
+          <option value="">Todos los años</option>
+          {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  {% if publicaciones %}
+    <div class="row g-4 my-5" id="publicationsGrid">
+      {% for publicacion in publicaciones %}
+      <div class="col-lg-4 col-md-6 publication-item animate__animated animate__fadeInUp" 
+           data-title="{{ publicacion.titulo|lower }}" 
+           data-authors="{{ publicacion.autores|lower }}" 
+           data-year="{{ publicacion.fecha|date:'Y' }}">
+        <a href="{% url 'core:publicacion_detalle' publicacion.pk %}" class="text-decoration-none">
+          <div class="publication-card">
+            <div class="card-img-container">
+              {% with first_image=publicacion.imagenes.all|first %}
+                {% if first_image.imagen %}
+                  <img src="{{ first_image.imagen.url }}" alt="{{ publicacion.titulo }}" loading="lazy">
+                {% else %}
+                  <div class="card-img-placeholder"><i class="bi bi-image"></i></div>
+                {% endif %}
+              {% endwith %}
+            </div>
+            
+            <div class="card-body">
+              <h3 class="card-title">{{ publicacion.titulo }}</h3>
+              {% if publicacion.autores %}
+                <p class="card-authors">{{ publicacion.autores }}</p>
+              {% endif %}
+
+              {% with integrantes=publicacion.publicacionintegrante_set.all %}
+                {% if integrantes %}
+                  <div class="team-preview">
+                    <h4 class="team-preview-title">Integrantes del Equipo</h4>
+                    <div class="team-badges">
+                      {% for integ in integrantes|slice:":3" %}
+                        <span class="integrante-badge" title="{{ integ.integrante.nombre }}">
+                          {{ integ.integrante.nombre|truncatechars:15 }}
+                        </span>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endwith %}
+              
+              <div class="card-footer">
+                <span class="card-date">
+                  <i class="bi bi-calendar3 me-2"></i>{{ publicacion.fecha|date:"d M, Y"|default:"Sin fecha" }}
+                </span>
+                <span class="btn-details">
+                  Ver más <i class="bi bi-arrow-right-short"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div id="emptySearchMessage" class="empty-state" style="display: none;">
+      <i class="bi bi-search"></i>
+      <h3>No se encontraron resultados</h3>
+      <p class="text-muted">Intenta con otros términos de búsqueda o filtros.</p>
+    </div>
+
+  {% else %}
+    <div class="empty-state">
+      <i class="bi bi-journal-x"></i>
+      <h3>No hay publicaciones disponibles</h3>
+      <p class="text-muted">Pronto estarán disponibles las últimas investigaciones.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const filterYear = document.getElementById('filterYear');
+    const publicationItems = document.querySelectorAll('.publication-item');
+    const emptySearchMessage = document.getElementById('emptySearchMessage');
+    
+    function filterPublications() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedYear = filterYear.value;
+        let visibleCount = 0;
+        
+        publicationItems.forEach(item => {
+            const title = item.dataset.title || '';
+            const authors = item.dataset.authors || '';
+            const year = item.dataset.year || '';
+            
+            const matchesSearch = title.includes(searchTerm) || authors.includes(searchTerm);
+            const matchesYear = !selectedYear || year === selectedYear;
+            
+            if (matchesSearch && matchesYear) {
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        emptySearchMessage.style.display = (visibleCount === 0 && publicationItems.length > 0) ? 'block' : 'none';
+    }
+    
+    if (searchInput) searchInput.addEventListener('input', filterPublications);
+    if (filterYear) filterYear.addEventListener('change', filterPublications);
+});
+</script>
+{% endblock %}

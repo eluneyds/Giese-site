@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  body {
+    background: url('https://i.ibb.co/TDW0HhHr/fondo-inicio.jpg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+  }
+  .bg-blur {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(2px);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  }
+  /* ==== Estilos del desplegable tipo libro ==== */
+  .expandable {
+    position: relative;
+    overflow: hidden;
+    max-height: 180px; /* altura inicial (resumen) */
+    transition: max-height 0.8s ease-in-out;
+    cursor: pointer;
+  }
+  .expandable.expanded {
+    max-height: 2000px; /* abre todo el contenido */
+    transition: max-height 1.2s cubic-bezier(0.86, 0, 0.07, 1);
+  }
+  .expand-btn {
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #14532d;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s;
+  }
+  .expand-btn:hover {
+    color: #22c55e;
+  }
+  /* ==== Efecto estela verde (animación librito) ==== */
+  .expandable.expanded::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    background: linear-gradient(180deg, #22c55e, transparent);
+    animation: trail 1s ease-out forwards;
+  }
+  @keyframes trail {
+    from { height: 0; opacity: 0.8; }
+    to { height: 100%; opacity: 0; }
+  }
+</style>
+
+<div class="row align-items-center mb-5 g-5">
+  <div class="col-lg-7" data-aos="fade-right">
+    <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInLeft">Quiénes Somos</h1>
+    
+    <!-- Texto largo con resumen desplegable -->
+    <div class="bg-blur p-4 mb-4 animate__animated animate__fadeInLeft animate__delay-1s">
+      <div class="expandable" id="quienes-somos-text">
+        Este grupo de investigación encuentra sustento, anaigo y condiciones de posibilidad a partir de la trayectoria académica del Centro de Investigaciones Multidisciplinarias en Educación (CIMED), asociado al Consejo Latinoamericano de Ciencias Sociales (CLACSO). Este Centro ha promovido en los últimos años un fecundo y jerarquizado corpus de producción bibliográfica y una profusión de eventos y actividades científicas, así como alianzas con instituciones regionales, nacionales e internacionales para las cuales constituye un referente de la investigación educativa, especialmente (auto) biográfica narrativa, y de la educación docente. En esta tradición, y con el impulso que ha generado la reapertura de la Licenciatura en Ciencias de la Educación en la Facultad de Humanidades, el grupo de Investigación que proponemos busca cimentarse en las pedagogias radicales que signan gran parte del trabajo más reconocido del Centro, a la vez que se interesa por los escenarios educativos, escolares pero también aquellos y distribuidos en el campo más amplio y difuso de la cultura, en los que se suscitan cotidianamente procesos de destitución y re-institución de sentidos sobre lo educativo. De cara a las escuelas, los institutos de formación docente y las múltiples agencias culturales y movimientos sociales que se implican en prácticas pedagógicas contemporáneas, intencionadas y eficaces, nos proponemos además indagar respecto de las subjetividades que se con-forman en diálogo con referencias discursivas sociales inscriptas en los actuales regimenes colonial-capitalisticos (Rolnik, 2017). Desde la vocación trans-territorial que queda comprometida en el necesario interjuego entre exterioridades e interioridades, nos interesa recomponer la posibilidad de ver (y escuchar, sentir, tocar) las tramas ch'ixi (Cusicanqui, 2016) propias de las experiencias educativas cuyas representaciones analiticas han sido mutilantes de la complejidad que les es inherente. La intención es recuperar los hilos que garantizan la continuidad entre instituciones, saberes, creencias y prácticas sociales (incluidas las escolares) en el plano inmanente de la vida común.
+      </div>
+      <span class="expand-btn" data-target="quienes-somos-text">Leer más ↓</span>
+    </div>
+
+    <div class="bg-blur p-4 mb-3 animate__animated animate__fadeInLeft animate__delay-2s">
+      <ul class="list-unstyled mb-0">
+        <li><strong>Email:</strong> <a href="mailto:gieseunmdp@gmail.com">gieseunmdp@gmail.com</a></li>
+        <li><strong>Facultad de Humanidades</strong></li>
+        <li><strong>Dirección postal:</strong> Funes 3350, (7600) - Mar del Plata, Pcia. de Buenos Aires, República Argentina</li>
+      </ul>
+    </div>
+    <a href="/contacto/" class="btn btn-primary btn-lg mt-2 animate__animated animate__pulse animate__infinite">Contactanos</a>
+  </div>
+
+  <div class="col-lg-5 text-center" data-aos="fade-left">
+    <img src="https://i.postimg.cc/bJpNc6Sg/Imagen-de-WhatsApp-2025-09-02-a-las-19-28-04-0de519aa.png" class="img-fluid rounded-4 shadow-lg animate__animated animate__zoomIn" alt="Universidad GIESE" style="max-height:370px; object-fit:cover;">
+    <div class="mt-4 p-3 bg-blur animate__animated animate__fadeInUp animate__delay-2s">
+      <h5 class="mb-2"><i class="bi bi-geo-alt-fill text-success"></i> Nuestra ubicación</h5>
+      <p class="mb-1">Funes 3350, (7600) - Mar del Plata</p>
+      <p class="mb-1">Pcia. de Buenos Aires, República Argentina</p>
+      <a href="mailto:gieseunmdp@gmail.com" class="text-decoration-none"><i class="bi bi-envelope-fill text-success"></i> gieseunmdp@gmail.com</a>
+    </div>
+  </div>
+</div>
+
+<!-- Tarjetas -->
+<div class="row mt-5 g-4">
+  <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+    <div class="card text-center border-0 shadow-sm h-100 rounded-4 bg-blur">
+      <div class="card-body py-4">
+        <h5 class="card-title mb-3">Compromiso</h5>
+        <p class="card-text">Formamos profesionales y ciudadanos comprometidos con la sociedad y la investigación.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+    <div class="card text-center border-0 shadow-sm h-100 rounded-4 bg-blur">
+      <div class="card-body py-4">
+        <h5 class="card-title mb-3">Innovación</h5>
+        <p class="card-text">Promovemos la innovación y el desarrollo científico en Mar del Plata y la región.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+    <div class="card text-center border-0 shadow-sm h-100 rounded-4 bg-blur">
+      <div class="card-body py-4">
+        <h5 class="card-title mb-3">Inclusión</h5>
+        <p class="card-text">Creemos en la educación inclusiva y el acceso igualitario a oportunidades.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="mt-5 pt-4 border-top text-center text-muted small animate__animated animate__fadeInUp animate__delay-3s bg-blur">
+  <div>GIESE - Grupo de Investigación y Extensión en Educación</div>
+  <div>Funes 3350, (7600) - Mar del Plata, Pcia. de Buenos Aires, República Argentina</div>
+  <div>Email: <a href="mailto:gieseunmdp@gmail.com">gieseunmdp@gmail.com</a></div>
+</footer>
+
+<script>
+  document.querySelectorAll('.expand-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.target);
+      target.classList.toggle('expanded');
+      btn.textContent = target.classList.contains('expanded') ? "Leer menos ↑" : "Leer más ↓";
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  body {
+    background: url('https://i.postimg.cc/3RTK1YXd/univesidad-unmdp-02-1280x720-1.jpg0') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+  }
+  .panel-header {
+    background: linear-gradient(90deg, #e0f7fa 0%, #b2dfdb 100%);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(44,62,80,0.10);
+    padding: 2rem 1rem 1.5rem 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -40px;
+    width: 120px; height: 120px;
+    background: rgba(44,62,80,0.07);
+    border-radius: 50%;
+    z-index: 0;
+  }
+  .panel-header h2 {
+    position: relative;
+    z-index: 1;
+    font-weight: 700;
+    color: #14532d;
+    letter-spacing: 1px;
+  }
+</style>
+<h2 class="panel-header animate__animated animate__fadeInDown text-center"><i class="bi bi-newspaper me-2"></i>Panel de gestión de noticias</h2>
+<div class="mb-3 text-end">
+  <a href="{% url 'core:noticia_add' %}" class="btn btn-success"><i class="bi bi-plus-circle me-2"></i>Agregar noticia</a>
+  <a href="{% url 'core:logout' %}" class="btn btn-outline-secondary ms-2"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a>
+</div>
+<div class="row g-4 justify-content-center">
+  {% for noticia in noticias %}
+    <div class="col-12 col-md-8 col-lg-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+      <div class="card border-0 shadow-sm rounded-4 mb-4 animate__animated animate__fadeInUp">
+        {% with imagenes=noticia.imagenes.all %}
+        {% if imagenes %}
+          <!-- Carrusel de imágenes en el panel -->
+          <div id="panel-carousel-{{ noticia.id }}" class="carousel slide" data-bs-ride="false">
+            <div class="carousel-inner">
+              {% for img in imagenes %}
+              <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ img.imagen.url }}" class="d-block w-100 rounded-top-4" alt="{{ noticia.titulo }}" style="object-fit:cover; max-height:260px;">
+              </div>
+              {% endfor %}
+            </div>
+            {% if imagenes|length > 1 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#panel-carousel-{{ noticia.id }}" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#panel-carousel-{{ noticia.id }}" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Siguiente</span>
+            </button>
+            {% endif %}
+          </div>
+        {% elif noticia.imagen %}
+          <img src="{{ noticia.imagen.url }}" class="card-img-top rounded-top-4" alt="{{ noticia.titulo }}" style="object-fit:cover; max-height:260px;">
+        {% endif %}
+        {% endwith %}
+        <div class="card-body">
+          <h5 class="card-title">{{ noticia.titulo }}</h5>
+          <p class="card-text">{{ noticia.contenido|truncatewords:40 }}</p>
+          {% if noticia.video %}
+          <p class="card-text"><small class="text-success"><i class="bi bi-camera-video me-1"></i>Incluye video</small></p>
+          {% endif %}
+          <p class="card-text">
+            <small class="text-muted">
+              <i class="bi bi-calendar3 me-1"></i>{{ noticia.fecha|date:"d/m/Y" }}
+            </small>
+            {% if noticia.user %}
+            <small class="text-muted ms-2">
+              <i class="bi bi-person-circle me-1"></i>{{ noticia.user.get_full_name|default:noticia.user.username }}
+            </small>
+            {% endif %}
+          </p>
+          <div class="mt-2">
+            <a href="{% url 'core:noticia_edit' noticia.pk %}" class="btn btn-outline-primary btn-sm me-1">
+              <i class="bi bi-pencil me-1"></i>Editar
+            </a>
+            <a href="{% url 'core:noticia_delete' noticia.pk %}" class="btn btn-outline-danger btn-sm">
+              <i class="bi bi-trash me-1"></i>Eliminar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12 text-center">
+      <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>Aún no hay noticias cargadas.
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

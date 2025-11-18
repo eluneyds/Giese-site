@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+    <div class="panel-header animate__animated animate__fadeInDown mb-4">
+      <h2 class="mb-0"><i class="bi bi-calendar-event me-2"></i>Panel de Eventos</h2>
+      <a href="{% url 'core:evento_add' %}" class="btn btn-success position-absolute end-0 top-0 mt-3 me-3 hvr-bounce-in"><i class="bi bi-plus-circle"></i> Agregar evento</a>
+    </div>
+    <div class="card shadow rounded-4 animate__animated animate__fadeInUp">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Fecha</th>
+                <th>Cierre</th>
+                <th>PDF</th>
+                <th>Archivo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for evento in eventos %}
+              <tr>
+                <td>{{ evento.nombre }}</td>
+                <td>{{ evento.fecha }}</td>
+                <td>{{ evento.fecha_cierre|default:'-' }}</td>
+                <td>{% if evento.pdf %}<a href="{{ evento.pdf.url }}" target="_blank"><i class="bi bi-file-earmark-pdf"></i> PDF</a>{% else %}-{% endif %}</td>
+                <td>{% if evento.archivo %}<a href="{{ evento.archivo.url }}" target="_blank"><i class="bi bi-download"></i> Descargar</a>{% else %}-{% endif %}</td>
+                <td>
+                  <a href="{% url 'core:evento_edit' evento.pk %}" class="btn btn-sm btn-outline-primary hvr-grow"><i class="bi bi-pencil"></i></a>
+                  <a href="{% url 'core:evento_delete' evento.pk %}" class="btn btn-sm btn-outline-danger ms-1 hvr-buzz"><i class="bi bi-trash"></i></a>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6" class="text-center">No hay eventos registrados.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+{% block title %}{{ investigacion.titulo }} | GIESE{% endblock %}
+
+{% block head %}
+<style>
+  :root {
+    --research-primary: #1a4d2e;
+    --research-secondary: #4a7c59;
+    --research-accent: #7fc242;
+    --research-gold: #d4af37;
+  }
+
+  .research-detail-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fffe 0%, #e9f5e9 100%);
+    padding: 2rem 0;
+  }
+
+  .research-header {
+    background: linear-gradient(135deg, var(--research-primary), var(--research-secondary));
+    color: white;
+    padding: 3rem 0;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(26, 77, 46, 0.2);
+  }
+
+  .research-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .research-meta {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .research-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .research-meta-item i {
+    color: var(--research-accent);
+    font-size: 1.2rem;
+  }
+
+  /* Carrusel de fotos */
+  .carousel-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(26, 77, 46, 0.08);
+  }
+
+  .carousel-inner img {
+    border-radius: 12px;
+    max-height: 500px;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: var(--research-primary);
+    border-radius: 50%;
+    padding: 1.5rem;
+  }
+
+  /* Video de portada */
+  .video-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(26, 77, 46, 0.08);
+  }
+
+  .video-section video {
+    width: 100%;
+    border-radius: 12px;
+    max-height: 500px;
+  }
+
+  /* Descripción */
+  .description-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(26, 77, 46, 0.08);
+  }
+
+  .description-section h3 {
+    color: var(--research-primary);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid var(--research-accent);
+    padding-bottom: 0.5rem;
+  }
+
+  .description-section p {
+    color: #555;
+    line-height: 1.8;
+    font-size: 1.1rem;
+  }
+
+  /* Integrantes */
+  .integrantes-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(26, 77, 46, 0.08);
+  }
+
+  .integrantes-section h3 {
+    color: var(--research-primary);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid var(--research-accent);
+    padding-bottom: 0.5rem;
+  }
+
+  .integrante-card {
+    background: linear-gradient(135deg, #f8fffe 0%, #e9f5e9 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+  }
+
+  .integrante-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(26, 77, 46, 0.15);
+    border-color: var(--research-accent);
+  }
+
+  .integrante-card.clickable {
+    cursor: pointer;
+  }
+
+  .integrante-card.no-link {
+    cursor: default;
+  }
+
+  .integrante-name {
+    color: var(--research-primary);
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .integrante-name i {
+    color: var(--research-accent);
+  }
+
+  .integrante-rol {
+    color: var(--research-secondary);
+    font-size: 1rem;
+    font-style: italic;
+  }
+
+  /* Archivos para descargar */
+  .archivos-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(26, 77, 46, 0.08);
+  }
+
+  .archivos-section h3 {
+    color: var(--research-primary);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid var(--research-accent);
+    padding-bottom: 0.5rem;
+  }
+
+  .archivo-item {
+    background: linear-gradient(135deg, #f8fffe 0%, #e9f5e9 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .archivo-item:hover {
+    transform: translateX(8px);
+    border-color: var(--research-accent);
+    box-shadow: 0 4px 16px rgba(26, 77, 46, 0.1);
+  }
+
+  .archivo-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .archivo-icon {
+    font-size: 2rem;
+    color: var(--research-accent);
+  }
+
+  .archivo-name {
+    color: var(--research-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .download-btn {
+    background: linear-gradient(135deg, var(--research-accent), var(--research-secondary));
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(127, 194, 66, 0.3);
+    color: white;
+  }
+
+  .back-btn {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .back-btn:hover {
+    transform: translateX(-4px);
+    color: white;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="research-detail-page">
+  <div class="container">
+    <!-- Botón volver -->
+    <a href="{% url 'core:investigacion' %}" class="back-btn">
+      <i class="bi bi-arrow-left"></i>
+      Volver a investigaciones
+    </a>
+
+    <!-- Header -->
+    <div class="research-header">
+      <div class="container">
+        <h1>{{ investigacion.titulo }}</h1>
+        <div class="research-meta">
+          <div class="research-meta-item">
+            <i class="bi bi-calendar3"></i>
+            <span>{{ investigacion.fecha|date:"d M Y"|default:"Sin fecha" }}</span>
+          </div>
+          {% if investigacion.user %}
+          <div class="research-meta-item">
+            <i class="bi bi-person-check"></i>
+            <span>Responsable: {{ investigacion.user.get_full_name|default:investigacion.user.username }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Video de portada -->
+    {% if investigacion.video_portada %}
+    <div class="video-section">
+      <h3><i class="bi bi-play-circle me-2"></i>Video de la investigación</h3>
+      <video controls>
+        <source src="{{ investigacion.video_portada.url }}" type="video/mp4">
+        Tu navegador no soporta el elemento de video.
+      </video>
+    </div>
+    {% endif %}
+
+    <!-- Carrusel de fotos -->
+    {% if investigacion.fotos.all or investigacion.imagen_portada %}
+    <div class="carousel-section">
+      <h3><i class="bi bi-images me-2"></i>Galería de imágenes</h3>
+      <div id="carouselInvestigacion" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {% if investigacion.imagen_portada %}
+          <div class="carousel-item active">
+            <img src="{{ investigacion.imagen_portada.url }}" class="d-block w-100" alt="Portada">
+          </div>
+          {% endif %}
+          
+          {% for foto in investigacion.fotos.all %}
+          <div class="carousel-item {% if not investigacion.imagen_portada and forloop.first %}active{% endif %}">
+            <img src="{{ foto.foto.url }}" class="d-block w-100" alt="Foto {{ forloop.counter }}">
+          </div>
+          {% endfor %}
+        </div>
+        
+        {% if investigacion.fotos.count > 1 or investigacion.imagen_portada and investigacion.fotos.count > 0 %}
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselInvestigacion" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselInvestigacion" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Siguiente</span>
+        </button>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Descripción -->
+    {% if investigacion.descripcion %}
+    <div class="description-section">
+      <h3><i class="bi bi-file-text me-2"></i>Descripción</h3>
+      <p>{{ investigacion.descripcion|linebreaksbr }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Integrantes/Autores -->
+    {% if investigacion.investigacionintegrante_set.all %}
+    <div class="integrantes-section">
+      <h3><i class="bi bi-people me-2"></i>Integrantes del equipo</h3>
+      {% for integ in investigacion.investigacionintegrante_set.all %}
+      <div class="integrante-card {% if integ.integrante %}clickable{% else %}no-link{% endif %}"
+           {% if integ.integrante %}onclick="window.location.href='{% url 'core:equipo_detalle' integ.integrante.pk %}'"{% endif %}>
+        <div class="integrante-name">
+          {% if integ.integrante %}
+          <i class="bi bi-person-circle"></i>
+          {{ integ.integrante.nombre }}
+          {% else %}
+          <i class="bi bi-person"></i>
+          Integrante {{ forloop.counter }}
+          {% endif %}
+        </div>
+        {% if integ.rol %}
+        <div class="integrante-rol">{{ integ.rol }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Archivos para descargar -->
+    {% if investigacion.archivos.all %}
+    <div class="archivos-section">
+      <h3><i class="bi bi-file-earmark-arrow-down me-2"></i>Archivos disponibles</h3>
+      {% for archivo in investigacion.archivos.all %}
+      <div class="archivo-item">
+        <div class="archivo-info">
+          <div class="archivo-icon">
+            <i class="bi bi-file-earmark-pdf"></i>
+          </div>
+          <div class="archivo-name">{{ archivo.nombre|default:"Documento" }}</div>
+        </div>
+        <a href="{{ archivo.archivo.url }}" class="download-btn" download>
+          <i class="bi bi-download"></i>
+          Descargar
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+// Auto-play carousel
+document.addEventListener('DOMContentLoaded', function() {
+  const carousel = document.getElementById('carouselInvestigacion');
+  if (carousel) {
+    new bootstrap.Carousel(carousel, {
+      interval: 5000,
+      wrap: true
+    });
+  }
+});
+</script>
+{% endblock %}

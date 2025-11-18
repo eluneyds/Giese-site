@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-calendar-event me-2"></i>Eventos</h1>
+<div class="row g-3">
+  {% for evento in eventos %}
+  <div class="col-12">
+    <div class="card shadow-sm overflow-hidden">
+      <div class="row g-0 align-items-center">
+        <!-- Cover: imagen_portada > cover_url > placeholder -->
+        <div class="col-md-3 d-none d-md-block" style="background:#f6f8f7;">
+          {% if evento.imagen_portada %}
+            <img src="{{ evento.imagen_portada.url }}" alt="{{ evento.nombre }}" class="img-fluid" style="max-height:160px; object-fit:cover; width:100%;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'d-flex align-items-center justify-content-center text-muted\' style=\'height:160px;\'><i class=\'bi bi-calendar-event\' style=\'font-size:3rem;\'></i></div>';">
+          {% elif evento.cover_url %}
+            <img src="{{ evento.cover_url }}" alt="{{ evento.nombre }}" class="img-fluid" style="max-height:160px; object-fit:cover; width:100%;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'d-flex align-items-center justify-content-center text-muted\' style=\'height:160px;\'><i class=\'bi bi-calendar-event\' style=\'font-size:3rem;\'></i></div>';">
+          {% else %}
+            <div class="d-flex align-items-center justify-content-center text-muted" style="height:160px;">
+              <i class="bi bi-calendar-event" style="font-size:3rem;"></i>
+            </div>
+          {% endif %}
+        </div>
+        <div class="col-md-9">
+          <div class="card-body">
+            <h5 class="card-title mb-1">{{ evento.nombre }}</h5>
+            <div class="text-muted small mb-2">
+              <i class="bi bi-calendar3 me-1"></i>
+              {{ evento.fecha|date:'d M Y'|default:'Sin fecha' }}
+              {% if evento.fecha_cierre %} · Cierre: {{ evento.fecha_cierre|date:'d M Y' }}{% endif %}
+            </div>
+            <p class="card-text mb-3">{{ evento.descripcion }}</p>
+
+            <!-- Downloads: from related archivos -->
+            {% if evento.archivos.all %}
+            <div class="d-flex flex-wrap gap-2">
+              {% for a in evento.archivos.all %}
+                <a href="{{ a.archivo.url }}" class="btn btn-sm btn-outline-primary" download>
+                  <i class="bi bi-download me-1"></i>{{ a.nombre|default:a.archivo.name }}
+                </a>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Backward compatibility: legacy pdf/archivo fields -->
+            <div class="mt-2">
+              {% if evento.pdf %}
+                <a href="{{ evento.pdf }}" class="btn btn-sm btn-primary me-1" download><i class="bi bi-filetype-pdf me-1"></i>PDF</a>
+              {% endif %}
+              {% if evento.archivo %}
+                <a href="{{ evento.archivo }}" class="btn btn-sm btn-secondary" download><i class="bi bi-paperclip me-1"></i>Archivo</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12"><div class="alert alert-info text-center">No hay eventos registrados.</div></div>
+  {% endfor %}
+</div>
+{% endblock %}

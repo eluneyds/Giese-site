@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% block title %}{{ publicacion.titulo }} | Publicaciones{% endblock %}
+
+{% block head %}
+<style>
+  body {
+    background: linear-gradient(-45deg, var(--primary-color), var(--secondary-color), #228b22, var(--accent-color)) !important;
+    background-size: 400% 400% !important;
+    animation: gradientBG 15s ease infinite !important;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* =================================== */
+  /*      Page Header & Structure      */
+  /* =================================== */
+  .page-header {
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .page-header .breadcrumb-item a {
+    color: var(--secondary-color);
+    text-decoration: none;
+  }
+  .page-header .breadcrumb-item a:hover {
+    color: var(--primary-color);
+  }
+
+  .publication-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 2.8rem;
+    color: var(--dark-text);
+    line-height: 1.2;
+  }
+
+  .publication-main-content {
+    padding: 3rem 0;
+  }
+
+  /* =================================== */
+  /*      Main Content & Article       */
+  /* =================================== */
+  .article-body {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333;
+  }
+
+  .article-body h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+  }
+
+  .article-body .main-image {
+    width: 100%;
+    height: auto;
+    max-height: 400px; /* Reduced height */
+    object-fit: cover;
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-medium);
+  }
+
+  .article-body .resumen {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #555;
+    margin-bottom: 2rem;
+    padding-left: 1.5rem;
+    border-left: 3px solid var(--accent-color);
+  }
+
+  /* =================================== */
+  /*           Sidebar Styling           */
+  /* =================================== */
+  .sidebar-widget {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .widget-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .widget-title i {
+    margin-right: 0.75rem;
+    color: var(--secondary-color);
+  }
+
+  /* --- Meta List (Date, etc.) --- */
+  .meta-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .meta-list li {
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+    color: var(--dark-text);
+    margin-bottom: 0.75rem;
+  }
+
+  .meta-list li i {
+    color: var(--secondary-color);
+    margin-right: 1rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  /* --- Authors & Team List --- */
+  .authors-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .authors-list li {
+    margin-bottom: 0.5rem;
+  }
+
+  .authors-list a {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    color: var(--dark-text);
+    font-weight: 500;
+    transition: var(--transition);
+  }
+
+  .authors-list a:hover {
+    background-color: var(--secondary-color);
+    color: white;
+    transform: translateX(5px);
+  }
+
+  .authors-list a .role {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.7;
+    font-style: italic;
+  }
+
+  /* --- Downloads List --- */
+  .downloads-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .downloads-list li a {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    background-color: #eef2f6;
+    transition: var(--transition);
+    margin-bottom: 0.5rem;
+  }
+
+  .downloads-list li a:hover {
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  .downloads-list li a i {
+    margin-right: 1rem;
+  }
+
+  /* =================================== */
+  /*        Galleries & Videos         */
+  /* =================================== */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-light);
+  }
+
+  .gallery-item img:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="publication-main-content">
+  <div class="container">
+    <div class="row g-5">
+      <!-- Columna principal del artículo -->
+      <div class="col-lg-8">
+        <article class="article-body">
+          <!-- Encabezado y Breadcrumb -->
+          <header class="mb-4">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:inicio' %}">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'core:publicaciones' %}">Publicaciones</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ publicacion.titulo|truncatechars:40 }}</li>
+              </ol>
+            </nav>
+            <h1 class="publication-title">{{ publicacion.titulo }}</h1>
+          </header>
+
+          <!-- Imagen Principal (más pequeña) -->
+          {% with first_image=publicacion.imagenes.all|first %}
+            {% if first_image.imagen %}
+              <img src="{{ first_image.imagen.url }}" alt="{{ publicacion.titulo }}" class="main-image">
+            {% endif %}
+          {% endwith %}
+
+          <!-- Resumen -->
+          {% if publicacion.resumen %}
+            <p class="resumen">{{ publicacion.resumen|linebreaksbr }}</p>
+          {% endif %}
+
+          <!-- Videos -->
+          {% with videos=publicacion.videos.all %}
+            {% if videos %}
+              <section id="videos">
+                <h2>Videos</h2>
+                {% for v in videos %}
+                  {% if v.video %}
+                    <div class="video-container mb-4">
+                      <video controls preload="metadata" class="w-100">
+                        <source src="{{ v.video.url }}" type="video/mp4">
+                        Tu navegador no soporta la etiqueta de video.
+                      </video>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </section>
+            {% endif %}
+          {% endwith %}
+
+          <!-- Galería de Imágenes -->
+          {% with additional_images=publicacion.imagenes.all|slice:"1:" %}
+            {% if additional_images %}
+              <section id="galeria">
+                <h2>Galería</h2>
+                <div class="gallery-grid">
+                  {% for img in additional_images %}
+                    {% if img.imagen %}
+                      <div class="gallery-item">
+                        <img src="{{ img.imagen.url }}" alt="Imagen de la galería" loading="lazy" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-img-src="{{ img.imagen.url }}">
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </section>
+            {% endif %}
+          {% endwith %}
+
+        </article>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <aside>
+          <!-- Widget de Información -->
+          <div class="sidebar-widget">
+            <h3 class="widget-title"><i class="bi bi-info-circle"></i>Información</h3>
+            <ul class="meta-list">
+              <li><i class="bi bi-calendar3"></i> <strong>Fecha:</strong> {{ publicacion.fecha|date:"d M, Y"|default:"No especificada" }}</li>
+              <li><i class="bi bi-person"></i> <strong>Autor/es:</strong> {{ publicacion.autores|default:"No especificados" }}</li>
+            </ul>
+          </div>
+
+          <!-- Widget de Integrantes del Equipo -->
+          {% with integrantes=publicacion.publicacionintegrante_set.all %}
+            {% if integrantes %}
+              <div class="sidebar-widget">
+                <h3 class="widget-title"><i class="bi bi-people"></i>Integrantes del Equipo</h3>
+                <ul class="authors-list">
+                  {% for integ in integrantes %}
+                    <li>
+                      <a href="{% url 'core:equipo_detalle' integ.integrante.pk %}" title="Ver perfil de {{ integ.integrante.nombre }}">
+                        {{ integ.integrante.nombre }}
+                        {% if integ.rol %}
+                          <span class="role">{{ integ.rol }}</span>
+                        {% endif %}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          <!-- Widget de Descargas -->
+          {% with archivos=publicacion.archivos.all %}
+            {% if archivos %}
+              <div class="sidebar-widget">
+                <h3 class="widget-title"><i class="bi bi-download"></i>Descargas</h3>
+                <ul class="downloads-list">
+                  {% for a in archivos %}
+                    <li>
+                      <a href="{{ a.archivo.url }}" download>
+                        <i class="bi bi-file-earmark-arrow-down"></i>
+                        <span>{{ a.nombre|default:a.archivo.name|truncatechars:30 }}</span>
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          {% endwith %}
+
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ampliar imágenes -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalLabel">Imagen</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="" class="img-fluid rounded" id="modalImage" alt="Imagen ampliada">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var imageModal = document.getElementById('imageModal');
+  imageModal.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget;
+    var imgSrc = button.getAttribute('data-bs-img-src');
+    var modalImage = imageModal.querySelector('#modalImage');
+    modalImage.src = imgSrc;
+  });
+});
+</script>
+{% endblock %}

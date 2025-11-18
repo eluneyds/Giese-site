@@ -1,0 +1,674 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ persona.nombre }} | Nuestro Equipo | GIESE{% endblock %}
+
+{% block head %}
+<style>
+  :root {
+    --team-primary: #1a4d2e;
+    --giese-green: #7fc242;
+    --shadow-soft: 0 8px 30px rgba(26, 77, 46, 0.08);
+    --shadow-medium: 0 12px 48px rgba(26, 77, 46, 0.12);
+    --shadow-strong: 0 20px 60px rgba(26, 77, 46, 0.18);
+    --border-radius: 24px;
+    --profile-color: {{ persona.color_perfil|default:'#1a4d2e' }};
+  }
+
+  * {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .profile-page {
+    background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 50%, #f9fafb 100%);
+    padding: 3rem 0;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-page::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 15% 20%, rgba(127, 194, 66, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(26, 77, 46, 0.06) 0%, transparent 40%);
+    animation: breathe 15s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes breathe {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+  }
+
+  .profile-container {
+    max-width: 1000px;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-strong);
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease-out;
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes fadeInUp {
+    from { 
+      opacity: 0; 
+      transform: translateY(40px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  .profile-header {
+    background: linear-gradient(135deg, var(--profile-color) 0%, var(--team-primary) 100%);
+    padding: 3rem 2rem;
+    padding-top: 100px; 
+    text-align: center;
+    position: relative;
+    margin-bottom: -120px;
+    color: white;
+    overflow: hidden;
+  }
+
+  .profile-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/svg%3E");
+    animation: subtleMove 20s linear infinite;
+  }
+
+  @keyframes subtleMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 80px 80px; }
+  }
+
+  .profile-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1));
+  }
+
+  /* Logo y Foto Container */
+  .photo-logo-container {
+    position: relative;
+    display: inline-block;
+    z-index: 10;
+  }
+
+  .profile-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 8px solid white;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    background: white;
+    animation: floatPhoto 4s ease-in-out infinite;
+    position: relative;
+  }
+
+  @keyframes floatPhoto {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.02); }
+  }
+
+  .profile-photo:hover {
+    transform: scale(1.08) rotate(2deg);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  }
+
+  .giese-logo {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    animation: pulseLogo 3s ease-in-out infinite;
+    z-index: 15;
+  }
+
+  .giese-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  @keyframes pulseLogo {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+    50% { transform: scale(1.1); box-shadow: 0 12px 35px rgba(127, 194, 66, 0.4); }
+  }
+
+  .btn-back {
+    position: absolute;
+    top: 16px !important;
+    right: 16px !important; /* lejos del centro y de la foto */
+    left: auto !important;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    color: var(--team-primary);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+
+  .btn-back:hover {
+    background: white;
+    transform: translateX(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    color: var(--giese-green);
+  }
+
+  .profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--team-primary), var(--giese-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-top: 1.5rem;
+    letter-spacing: 1px;
+    animation: slideDown 0.6s ease-out 0.3s backwards;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .profile-role {
+    font-size: 1.3rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    font-weight: 500;
+    animation: slideDown 0.6s ease-out 0.5s backwards;
+  }
+
+  .profile-body {
+    padding: 3rem 2rem 2rem;
+  }
+
+  .profile-section {
+    padding: 2rem 2.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 20px;
+    border-left: 6px solid var(--profile-color);
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+    box-shadow: var(--shadow-soft);
+    animation: fadeInSection 0.6s ease-out backwards;
+  }
+
+  .profile-section:nth-child(1) { animation-delay: 0.1s; }
+  .profile-section:nth-child(2) { animation-delay: 0.2s; }
+  .profile-section:nth-child(3) { animation-delay: 0.3s; }
+  .profile-section:nth-child(4) { animation-delay: 0.4s; }
+  .profile-section:nth-child(5) { animation-delay: 0.5s; }
+
+  @keyframes fadeInSection {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .profile-section:hover {
+    transform: translateY(-8px) translateX(5px);
+    box-shadow: var(--shadow-medium);
+    border-left-width: 8px;
+  }
+
+  .profile-section h5 {
+    color: var(--profile-color);
+    font-size: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .profile-section h5::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, var(--profile-color), transparent);
+    margin-left: 15px;
+    opacity: 0.3;
+  }
+
+  .profile-section h5 i {
+    font-size: 1.6rem;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  .badge-chip {
+    background: linear-gradient(135deg, #eef7ef 0%, #e8f5e9 100%);
+    color: var(--team-primary);
+    border: 2px solid rgba(127, 194, 66, 0.2);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 8px 10px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .badge-chip:hover {
+    background: linear-gradient(135deg, var(--giese-green), var(--team-primary));
+    color: white;
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 6px 15px rgba(127, 194, 66, 0.3);
+  }
+
+  .badge-chip i {
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+  }
+
+  .btn-custom {
+    border-radius: 50px;
+    padding: 12px 28px;
+    font-weight: 700;
+    border-width: 2px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-custom::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn-custom:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+
+  /* Botones al estilo GIESE (verdes) */
+  .btn-outline-primary {
+    border-color: var(--giese-green);
+    color: var(--giese-green);
+  }
+  .btn-outline-primary:hover {
+    background: var(--giese-green);
+    color: #fff;
+    border-color: var(--giese-green);
+  }
+
+  .btn-outline-secondary {
+    border-color: var(--team-primary);
+    color: var(--team-primary);
+  }
+  .btn-outline-secondary:hover {
+    background: var(--team-primary);
+    color: #fff;
+    border-color: var(--team-primary);
+  }
+
+  .role-item {
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 1.5rem;
+  }
+
+  .role-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 12px;
+    height: 12px;
+    background: var(--giese-green);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  .role-item strong {
+    color: var(--team-primary);
+    font-size: 1.1rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .profile-page {
+      padding: 2rem 0;
+    }
+
+    .profile-header {
+      padding: 2rem 1rem;
+      padding-top: 80px;
+      margin-bottom: -100px;
+      position: relative;          /* contenedor de referencia */
+    }
+
+    .profile-photo {
+      width: 160px;
+      height: 160px;
+    }
+
+    .giese-logo {
+      width: 60px;
+      height: 60px;
+      top: -10px;
+      right: -10px;
+    }
+
+    .profile-name {
+      font-size: 2.2rem;
+    }
+
+    .profile-role {
+      font-size: 1.1rem;
+    }
+
+    .profile-body {
+      padding: 2rem 1rem;
+    }
+
+    .profile-section {
+      padding: 1.5rem;
+    }
+
+    .profile-section h5 {
+      font-size: 1.3rem;
+    }
+
+    .btn-back {
+      position: absolute;          /* ubicar dentro del header */
+      top: 6px;                    /* esquina superior izq */
+      left: 6px;
+      right: auto;
+      padding: 8px;                /* botón compacto */
+      border-radius: 999px;        /* circular */
+      font-size: 0;                /* ocultar texto en mobile */
+      z-index: 25;                 /* por encima del fondo pero lejos de la foto */
+    }
+
+    .btn-back i {
+      font-size: 1rem;             /* mantener ícono visible */
+      margin: 0;
+    }
+
+    .badge-chip {
+      font-size: 0.85rem;
+      padding: 6px 12px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .profile-photo {
+      width: 140px;
+      height: 140px;
+      border-width: 6px;
+    }
+
+    .giese-logo {
+      width: 50px;
+      height: 50px;
+      top: -8px;
+      right: -8px;
+    }
+
+    .profile-name {
+      font-size: 1.8rem;
+    }
+
+    .profile-section h5::after {
+      display: none;
+    }
+  }
+
+  /* Loading Animation */
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+
+  .profile-container.loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+  <div class="container">
+    <div class="profile-container">
+      <div class="profile-header">
+        <a href="{% url 'core:equipo' %}" class="btn btn-back" style="position:absolute; right:16px; top:16px;">
+          <i class="bi bi-arrow-left me-2"></i> Volver al equipo
+        </a>
+      </div>
+
+      <div class="text-center" style="position: relative; z-index: 10;">
+        <div class="photo-logo-container">
+          {% if persona.foto %}
+            {% if persona.foto|slice:':4' == 'http' %}
+              <img src="{{ persona.foto }}" alt="{{ persona.nombre }}" class="profile-photo">
+            {% else %}
+              <img src="{{ MEDIA_URL }}{{ persona.foto }}" alt="{{ persona.nombre }}" class="profile-photo">
+            {% endif %}
+          {% else %}
+            <div class="profile-photo d-flex align-items-center justify-content-center bg-light">
+              <i class="bi bi-person-fill text-muted" style="font-size: 6rem;"></i>
+            </div>
+          {% endif %}
+          
+          <!-- Logo GIESE -->
+          <div class="giese-logo">
+            <img src="https://i.postimg.cc/43kw1q3H/Captura-de-pantalla-2025-09-30-215611-removebg-preview.png" 
+                 alt="GIESE Logo">
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-body">
+        <div class="text-center mb-5">
+          <h1 class="profile-name">{{ persona.nombre }}</h1>
+          <p class="profile-role">
+            {% with primer_rol=persona.profesionalidades.first %}
+              {{ primer_rol.titulo|default:"Miembro del equipo" }}
+            {% endwith %}
+          </p>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-lg-11">
+
+            {% if persona.descripcion %}
+              <div class="profile-section">
+                <h5><i class="bi bi-card-text"></i> Sobre mí</h5>
+                <div style="line-height: 1.8; color: #444;">{{ persona.descripcion|linebreaksbr }}</div>
+              </div>
+            {% endif %}
+
+            <div class="profile-section">
+              <h5><i class="bi bi-briefcase-fill"></i> Roles y Cargos</h5>
+              {% for rol in persona.profesionalidades.all %}
+                <div class="role-item">
+                  <strong>{{ rol.titulo }}</strong>
+                  {% if rol.descripcion %}
+                    <p class="mb-0 mt-1 text-muted" style="font-size: 0.95rem; line-height: 1.6;">{{ rol.descripcion|linebreaksbr }}</p>
+                  {% endif %}
+                </div>
+              {% empty %}
+                <p class="text-muted mb-0">Sin roles cargados.</p>
+              {% endfor %}
+            </div>
+
+            {% if persona.equipo_universidades.count or persona.universidades.all|length or persona.nivel or persona.nivel_descripcion %}
+              <div class="profile-section">
+                <h5><i class="bi bi-mortarboard-fill"></i> Formación Académica</h5>
+                {% if persona.nivel %}
+                  <p class="mb-2"><strong style="color: var(--team-primary);">Nivel:</strong> <span style="color: #555;">{{ persona.nivel }}</span></p>
+                {% endif %}
+                {% if persona.nivel_descripcion %}
+                  <p class="mb-3" style="line-height: 1.7; color: #444;">{{ persona.nivel_descripcion|linebreaksbr }}</p>
+                {% endif %}
+                {% if persona.equipo_universidades.count %}
+                  <div class="list-compact mt-3">
+                    {% for eu in persona.equipo_universidades.all %}
+                      <div class="role-item">
+                        <strong>{{ eu.universidad.descripcion_universidad }}</strong>
+                        {% if eu.descripcion %}
+                          <p class="mb-0 mt-1 text-muted" style="font-size: 0.95rem;">{{ eu.descripcion|linebreaksbr }}</p>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% elif persona.universidades.all|length %}
+                  <div class="list-compact mt-3">
+                    {% for uni in persona.universidades.all %}
+                      <div class="role-item">
+                        <strong>{{ uni.descripcion_universidad }}</strong>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            <div class="profile-section">
+              <h5><i class="bi bi-bookmark-heart-fill"></i> Temas de Interés</h5>
+              <div class="d-flex flex-wrap">
+                {% if persona.equipo_intereses.count %}
+                  {% for ei in persona.equipo_intereses.all %}
+                    <div class="me-2 mb-2">
+                      <span class="badge-chip">
+                        <i class="bi bi-star-fill"></i>
+                        {{ ei.tema_interes.descripcion_interes }}
+                      </span>
+                      {% if ei.descripcion %}
+                        <div class="text-muted ms-2" style="font-size: 0.95rem; line-height: 1.6;">
+                          {{ ei.descripcion|linebreaksbr }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% empty %}
+                    <span class="text-muted">Sin intereses cargados.</span>
+                  {% endfor %}
+                {% else %}
+                  {% for interes in persona.intereses.all %}
+                    <div class="me-2 mb-2">
+                      <span class="badge-chip">
+                        <i class="bi bi-star-fill"></i>
+                        {{ interes.descripcion_interes }}
+                      </span>
+                      {% if interes.descripcion %}
+                        <div class="text-muted ms-2" style="font-size: 0.95rem; line-height: 1.6;">
+                          {{ interes.descripcion|linebreaksbr }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% empty %}
+                    <span class="text-muted">Sin intereses cargados.</span>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+
+            {% if persona.linkedin_url or persona.email_publico %}
+              <div class="profile-section">
+                <h5><i class="bi bi-share-fill"></i> Contacto</h5>
+                <div class="d-flex flex-wrap gap-3">
+                  {% if persona.linkedin_url %}
+                    <a href="{{ persona.linkedin_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-custom">
+                      <i class="bi bi-linkedin me-2"></i> LinkedIn
+                    </a>
+                  {% endif %}
+                  {% if persona.email_publico %}
+                    <a href="mailto:{{ persona.email_publico }}" class="btn btn-outline-secondary btn-custom">
+                      <i class="bi bi-envelope-fill me-2"></i> Enviar Email
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Animación suave al cargar
+  const sections = document.querySelectorAll('.profile-section');
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateX(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  sections.forEach(section => {
+    observer.observe(section);
+  });
+
+  console.log('🎨 Perfil GIESE cargado exitosamente');
+});
+</script>
+{% endblock %}

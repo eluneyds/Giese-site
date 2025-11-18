@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow rounded-4 animate__animated animate__fadeInUp">
+      <div class="card-body">
+        <h3 class="mb-4">{% if evento %}Editar evento{% else %}Agregar evento{% endif %}</h3>
+        <form method="post" enctype="multipart/form-data" id="eventoForm">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          <div class="mb-3">
+            <label for="id_nombre" class="form-label">Nombre del evento</label>
+            {{ form.nombre }}
+            {{ form.nombre.errors }}
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="id_fecha" class="form-label">Fecha de inicio</label>
+              {{ form.fecha }}
+              {{ form.fecha.errors }}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="id_fecha_cierre" class="form-label">Fecha de cierre</label>
+              {{ form.fecha_cierre }}
+              {{ form.fecha_cierre.errors }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="id_descripcion" class="form-label">Descripción</label>
+            {{ form.descripcion }}
+            {{ form.descripcion.errors }}
+          </div>
+          <div class="row">
+            <div class="col-md-7 mb-3">
+              <label for="id_imagen_portada" class="form-label">Imagen de portada</label>
+              {{ form.imagen_portada }}
+              {{ form.imagen_portada.errors }}
+            </div>
+            <div class="col-md-5 mb-3">
+              <label for="id_color" class="form-label">Color del evento</label>
+              {{ form.color }}
+              {{ form.color.errors }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Archivos del evento</label>
+            {% if evento %}
+            <ul class="list-group mb-2">
+              {% for a in evento.archivos.all %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-earmark-text me-2"></i>{{ a.nombre|default:a.archivo.name }}</span>
+                <a href="{{ a.archivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-box-arrow-up-right"></i></a>
+              </li>
+              {% empty %}
+              <li class="list-group-item text-muted">Sin archivos cargados.</li>
+              {% endfor %}
+            </ul>
+            <p class="text-muted small">Si subes nuevos archivos, reemplazarán a los actuales.</p>
+            {% endif %}
+
+            <div id="archivos-container">
+              <div class="row g-2 align-items-center mb-2">
+                <div class="col-md-7">
+                  <input type="file" name="archivos" class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip">
+                </div>
+                <div class="col-md-5">
+                  <input type="text" name="archivo_nombre" class="form-control" placeholder="Nombre visible (opcional)">
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addArchivoField()"><i class="bi bi-plus-circle me-1"></i>Agregar otro archivo</button>
+          </div>
+          <button type="submit" class="btn btn-success hvr-bounce-in"><i class="bi bi-check-circle"></i> Guardar</button>
+          <a href="{% url 'core:panel_eventos' %}" class="btn btn-secondary ms-2 hvr-buzz-out">Cancelar</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function addArchivoField(){
+  const c = document.getElementById('archivos-container');
+  const row = document.createElement('div');
+  row.className = 'row g-2 align-items-center mb-2';
+  row.innerHTML = `
+    <div class="col-md-7">
+      <input type="file" name="archivos" class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip">
+    </div>
+    <div class="col-md-5">
+      <div class="input-group">
+        <input type="text" name="archivo_nombre" class="form-control" placeholder="Nombre visible (opcional)">
+        <button type="button" class="btn btn-outline-danger" onclick="this.closest('.row').remove()"><i class="bi bi-x"></i></button>
+      </div>
+    </div>`;
+  c.appendChild(row);
+}
+</script>
+{% endblock %}

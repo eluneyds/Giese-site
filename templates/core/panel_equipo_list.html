@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Panel del Equipo | GIESE{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0"><i class="bi bi-people me-2"></i>Panel del Equipo</h2>
+    <a href="{% url 'core:equipo_add' %}" class="btn btn-success">
+      <i class="bi bi-person-plus me-1"></i>Agregar integrante
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      {% if equipo %}
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>DNI</th>
+                <th>Nivel</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for persona in equipo %}
+                <tr>
+                  <td>{{ persona.nombre }}</td>
+                  <td>{{ persona.dni|default:"-" }}</td>
+                  <td>{{ persona.nivel|default:"-" }}</td>
+                  <td>
+                    <a href="{% url 'core:equipo_edit' persona.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'core:equipo_delete' persona.pk %}" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <i class="bi bi-person-x fs-1 text-muted mb-3"></i>
+          <h5 class="text-muted">No hay integrantes cargados</h5>
+          <a href="{% url 'core:equipo_add' %}" class="btn btn-outline-success mt-2">
+            <i class="bi bi-person-plus me-1"></i>Agregar el primero
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

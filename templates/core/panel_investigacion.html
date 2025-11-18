@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  body {
+    background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+  }
+  .panel-header {
+    background: linear-gradient(90deg, #e0f7fa 0%, #b2dfdb 100%);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(44,62,80,0.10);
+    padding: 2rem 1rem 1.5rem 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -40px;
+    width: 120px; height: 120px;
+    background: rgba(44,62,80,0.07);
+    border-radius: 50%;
+    z-index: 0;
+  }
+  .panel-header h2 {
+    position: relative;
+    z-index: 1;
+    font-weight: 700;
+    color: #14532d;
+    letter-spacing: 1px;
+  }
+</style>
+<h2 class="panel-header animate__animated animate__fadeInDown text-center"><i class="bi bi-search me-2"></i>Panel de gestión de investigación</h2>
+<div class="mb-3 text-end">
+  <a href="{% url 'core:investigacion_add' %}" class="btn btn-success">Agregar investigación</a>
+  <a href="{% url 'core:logout' %}" class="btn btn-outline-secondary ms-2">Cerrar sesión</a>
+  {# Si 'logout' está en el namespace raíz, cambia a {% url 'logout' %} #}
+</div>
+<div class="row g-4 justify-content-center">
+  {% for inv in investigaciones %}
+    <div class="col-12 col-md-8 col-lg-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+      <div class="card border-0 shadow-pop rounded-4 mb-4 animate__animated animate__fadeInUp bg-white" style="overflow:hidden;">
+        <div class="card-body p-4">
+          <h5 class="card-title text-success">{{ inv.titulo }}</h5>
+          <p class="card-text mb-2">{{ inv.descripcion|linebreaksbr }}</p>
+          {% if inv.archivos.all|length %}
+          <a href="{% url 'core:investigacion_detalle' inv.pk %}" class="btn btn-outline-primary btn-sm mb-2">Ver/Descargar</a>
+          {% endif %}
+          <p class="card-text text-end"><small class="text-muted">{{ inv.fecha }}</small></p>
+          <div class="mt-2">
+            <a href="{% url 'core:investigacion_edit' inv.pk %}" class="btn btn-outline-primary btn-sm me-1">Editar</a>
+            <a href="{% url 'core:investigacion_delete' inv.pk %}" class="btn btn-outline-danger btn-sm">Eliminar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12 text-center">
+      <div class="alert alert-info">Aún no hay investigaciones cargadas.</div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

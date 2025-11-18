@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow rounded-4 mt-5 animate__animated animate__fadeInDown">
+      <div class="card-body">
+        <h2 class="mb-4 text-center">Iniciar sesión</h2>
+        <form method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          <div class="mb-3">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {{ form.username.errors }}
+          </div>
+          <div class="mb-3">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {{ form.password.errors }}
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Entrar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

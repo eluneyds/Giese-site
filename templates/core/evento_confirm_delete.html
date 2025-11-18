@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow rounded-4 animate__animated animate__fadeInUp">
+      <div class="card-body text-center">
+        <h4 class="mb-4">¿Seguro que deseas eliminar este evento?</h4>
+        <p><strong>{{ evento.nombre }}</strong></p>
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger hvr-buzz"><i class="bi bi-trash"></i> Eliminar</button>
+          <a href="{% url 'core:panel_eventos' %}" class="btn btn-secondary ms-2 hvr-buzz-out">Cancelar</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Nuestro Equipo | GIESE{% endblock %}
+
+{% block head %}
+<style>
+  :root {
+    --team-primary: #1a4d2e;
+    --team-secondary: #4a7c59;
+    --team-accent: #7fc242;
+    --border-radius: 20px;
+  }
+
+  .team-page { min-height: 100vh; }
+
+  .hero-section {
+    position: relative;
+    overflow: hidden;
+    color: white;
+    padding: 4.5rem 0;
+    border-radius: 0 0 2rem 2rem;
+    background: linear-gradient(135deg, var(--team-primary), var(--team-secondary));
+    background-size: 200% 200%;
+    animation: gradientShift 18s ease infinite;
+    box-shadow: 0 12px 40px rgba(26, 77, 46, 0.25);
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    inset: -20% -10% auto -10%;
+    height: 220%;
+    background:
+      radial-gradient(120px 120px at 10% 30%, rgba(255,255,255,0.10) 0%, transparent 60%),
+      radial-gradient(180px 180px at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 70%),
+      radial-gradient(150px 150px at 40% 80%, rgba(255,255,255,0.06) 0%, transparent 70%);
+    animation: floatParticles 22s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 100px;
+    background: url("data:image/svg+xml,%3Csvg width='1440' height='100' viewBox='0 0 1440 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,40 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z' fill='%23ffffff' fill-opacity='0.9'/%3E%3C/svg%3E") no-repeat center/cover;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .hero-section h1 { animation: fadeSlideUp 0.9s ease both; }
+  .hero-section p  { animation: fadeSlideUp 1.2s ease both; opacity: 0.95; }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes floatParticles {
+    0%   { transform: translateY(0) translateX(0) scale(1); }
+    50%  { transform: translateY(-12px) translateX(6px) scale(1.02); }
+    100% { transform: translateY(8px) translateX(-6px) scale(0.98); }
+  }
+  @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .search-section {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-top: -2rem;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  }
+
+  .team-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+    border-radius: var(--border-radius);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .team-card {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    height: 100%;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .team-card-link:hover .team-card {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 25px -5px var(--profile-color, transparent);
+  }
+
+  .team-card-link:hover .team-photo img {
+    transform: scale(1.08);
+    filter: saturate(1.05) contrast(1.02);
+  }
+
+  .team-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 5px;
+    background: var(--profile-color, var(--team-primary));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .team-card-link:hover .team-card::before { transform: scaleX(1); }
+
+  .team-photo {
+    height: 250px;
+    position: relative;
+    background: #f1f1f1;
+    overflow: hidden;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+  }
+
+  .team-photo img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+    transition: transform 0.5s ease, filter 0.5s ease;
+    transform-origin: center;
+  }
+
+  .team-photo .placeholder {
+    height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: #ccc; font-size: 5rem;
+  }
+
+  .team-info { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+  .team-name { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--team-primary); margin-bottom: 1rem; transition: color 0.3s ease; }
+  .team-card-link:hover .team-card .team-name { color: var(--profile-color, var(--team-primary)); }
+
+  .card-meta { margin-top: auto; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .meta-badge { padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; letter-spacing: 0.5px; }
+  .role-badge { background-color: var(--team-primary); color: white; }
+  .interest-badge { background-color: #eef7ef; color: var(--team-primary); border: 1px solid #d7ecd8; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="team-page">
+  <div class="hero-section">
+    <div class="container text-center">
+      <h1 class="display-4">Nuestro Equipo</h1>
+      <p class="lead fs-4">Conoce a los profesionales de nuestra institución.</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="search-section">
+      <form method="get">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" class="form-control" placeholder="Buscar por nombre o rol..." value="{{ request.GET.q }}">
+          <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <div class="row">
+      {% static "img/user-placeholder.png" as user_placeholder %}
+      {% for persona in equipo_completo %}
+        <div class="col-12 col-md-6 col-lg-4 mb-4 d-flex align-items-stretch">
+          <a href="{% url 'core:equipo_detalle' persona.pk %}" class="team-card-link w-100">
+            <div class="team-card" style="--profile-color: {{ persona.color_perfil|default:'#1a4d2e' }};">
+
+              <div class="team-photo">
+                {% if persona.foto %}
+                  {% if persona.foto|slice:':4' == 'http' %}
+                    <img
+                      src="{{ persona.foto }}"
+                      alt="{{ persona.nombre|default:'Foto de integrante' }}"
+                      loading="lazy"
+                      onerror="this.onerror=null;this.src='{{ user_placeholder }}';"
+                    >
+                  {% else %}
+                    <img
+                      src="{{ MEDIA_URL }}{{ persona.foto }}"
+                      alt="{{ persona.nombre|default:'Foto de integrante' }}"
+                      loading="lazy"
+                      onerror="this.onerror=null;this.src='{{ user_placeholder }}';"
+                    >
+                  {% endif %}
+                {% else %}
+                  <div class="placeholder"><i class="bi bi-person-fill"></i></div>
+                {% endif %}
+              </div>
+
+              <div class="team-info">
+                <h3 class="team-name">{{ persona.nombre }}</h3>
+                <div class="card-meta">
+                  {% if persona.nivel_descripcion %}
+                    <span class="meta-badge role-badge">
+                      <i class="bi bi-patch-check-fill"></i>
+                      {{ persona.nivel_descripcion|truncatechars:30 }}
+                    </span>
+                  {% endif %}
+                  {% if persona.descripcion %}
+                    <span class="meta-badge interest-badge">
+                      <i class="bi bi-info-circle"></i>
+                      {{ persona.descripcion|truncatechars:25 }}
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+
+            </div>
+          </a>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="text-center py-5">
+            <p class="text-muted fs-4">No se encontraron miembros.</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
